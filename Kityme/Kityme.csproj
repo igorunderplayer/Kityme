@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include=".env" CopyToOutputDirectory="PreserveNewest" />
+        <None Condition="Exists('.env')" Include=".env" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>
