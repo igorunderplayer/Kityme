@@ -15,7 +15,6 @@
       <option value="$PROJECT_DIR$/Kityme/nuget.config" />
       <option value="$PROJECT_DIR$/Kityme/Program.cs" />
       <option value="$PROJECT_DIR$/Kityme/Extensions/IMongoDatabaseExtension.cs" />
-      <option value="$PROJECT_DIR$/Kityme/Managers/DBManager.cs" />
       <option value="$PROJECT_DIR$/Kityme/Extensions/LavalinkNodeConnectionExtension.cs" />
       <option value="$PROJECT_DIR$/Kityme/Extensions/LavalinkTrackExtension.cs" />
       <option value="$PROJECT_DIR$/Kityme/Entities/User.cs" />
@@ -33,11 +32,15 @@
       <option value="$PROJECT_DIR$/Kityme/Commands/EconomyCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/MusicCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/SlashCommands/MusicSlashCommands.cs" />
-      <option value="$PROJECT_DIR$/Kityme/Kityme.csproj" />
       <option value="$PROJECT_DIR$/Kityme/config.json" />
-      <option value="$PROJECT_DIR$/Kityme/Util/DotEnv.cs" />
       <option value="$PROJECT_DIR$/Kityme/BotConfig.cs" />
+      <option value="$PROJECT_DIR$/Kityme/.env" />
+      <option value="$PROJECT_DIR$/Kityme/Kityme.csproj" />
+      <option value="$PROJECT_DIR$/Kityme/Managers/DBManager.cs" />
+      <option value="$PROJECT_DIR$/Kityme/config" />
+      <option value="$PROJECT_DIR$/Kityme/Util/LoadConfig.cs" />
       <option value="$PROJECT_DIR$/Kityme/Startup.cs" />
+      <option value="$PROJECT_DIR$/Kityme/Util/DotEnv.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1wC3I1DRrR7JqdqAaHxRbSUGeIK" />
@@ -71,7 +74,7 @@
     </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
-  <component name="UnityProjectConfiguration" hasMinimizedUI="null" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />

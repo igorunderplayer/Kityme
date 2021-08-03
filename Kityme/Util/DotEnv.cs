@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace Kityme.Utils
 {
@@ -11,16 +12,24 @@ namespace Kityme.Utils
                 return;
 
             foreach (var line in File.ReadAllLines(filePath))
-            {
-                var parts = line.Split(
-                    '=',
-                    StringSplitOptions.RemoveEmptyEntries);
+                        {
+                            var parts = line.Split(
+                                '=',
+                                StringSplitOptions.RemoveEmptyEntries);
 
-                if (parts.Length != 2)
-                    continue;
+                            string variable = parts[0];
+                            string value = parts[1];
+                            
+                            if (parts.Length < 2)
+                                continue;
 
-                Environment.SetEnvironmentVariable(parts[0], parts[1]);
-            }
+                            if (parts.Length > 3)
+                            {
+                                value = line.Replace($"{variable}=", "");
+                            }
+            
+                            Environment.SetEnvironmentVariable(variable, value);
+                        } 
         }
     }
 }

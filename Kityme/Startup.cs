@@ -41,7 +41,7 @@ namespace Kityme
                 Environment.GetEnvironmentVariable("SLAVALINK_HOST"),
                 Environment.GetEnvironmentVariable("LAVALINK_PASSWORD"),
                 Environment.GetEnvironmentVariable("MONGO_URL")
-                );
+            );
 
             var config = new DiscordConfiguration
             {
@@ -69,9 +69,7 @@ namespace Kityme
                 if (e.Message.Content.StartsWith($"<@{client.CurrentUser.Id}>") ||
                     e.Message.Content.StartsWith($"<!@{client.CurrentUser.Id}>"))
                     await e.Message.RespondAsync("'- se quise ve meus comando usa k!help 👍");
-
-                User u = await e.Author.GetAsync();
-                if (u == null) await e.Author.RegistUserAsync();
+                
                 return;
             };
 
@@ -83,6 +81,12 @@ namespace Kityme
             };
 
             Commands = Client.UseCommandsNext(commandsConfig);
+
+            Commands.CommandExecuted += async (CommandsNextExtension commands, CommandExecutionEventArgs e) =>
+            {
+                User u = await e.Context.User.GetAsync();
+                if (u == null) await e.Context.User.RegistUserAsync();
+            };
 
             Commands.RegisterCommands<FunCommands>();
             Commands.RegisterCommands<InfoCommands>();
@@ -96,25 +100,38 @@ namespace Kityme
             SlashCommands.RegisterCommands<MusicSlashCommands>();
 
 
-            string host = botConfig.LavalinkHost;
-            HttpClient client = new HttpClient();
-            var res = await client.GetAsync("https://" + host);
-            if (res.StatusCode != System.Net.HttpStatusCode.Unauthorized)
-                host = botConfig.SLavalinkHost;
-
-            ConnectionEndpoint endpoint = new ConnectionEndpoint
+            ConnectionEndpoint[] endpoint = new[]
             {
-                Hostname = host,
-                Port = 80,
-                Secured = false
+                new ConnectionEndpoint()
+                {
+                    Hostname = botConfig.LavalinkHost,
+                    Port = 80,
+                    Secured = false
+                },
+                new ConnectionEndpoint()
+                {
+                    Hostname = botConfig.SLavalinkHost,
+                    Port = 80,
+                    Secured = false
+                }
             };
 
-            LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
+            LavalinkConfiguration[] lavalinkConfig = new[]
             {
-                Password = botConfig.LavalinkPassword,
-                RestEndpoint = endpoint,
-                SocketEndpoint = endpoint,
-                SocketAutoReconnect = true
+                new LavalinkConfiguration()
+                {
+                    Password = botConfig.LavalinkPassword,
+                    RestEndpoint = endpoint[0],
+                    SocketEndpoint = endpoint[0],
+                    SocketAutoReconnect = true
+                },
+                new LavalinkConfiguration()
+                {
+                    Password = botConfig.LavalinkPassword,
+                    RestEndpoint = endpoint[1],
+                    SocketEndpoint = endpoint[1],
+                    SocketAutoReconnect = true
+                }
             };
 
 
@@ -127,12 +144,16 @@ namespace Kityme
             DBManager.Connect(botConfig.MongoUrl);
 
             await Client.ConnectAsync();
-            try
+            foreach (LavalinkConfiguration lavalinkConfiguration in lavalinkConfig)
             {
-                LavalinkNodeConnection node = await Lavalink.ConnectAsync(lavalinkConfig);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    await Lavalink.ConnectAsync(lavalinkConfiguration);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Não foi possivel conectar ao lavalink");
+                }
             }
 
             await Task.Delay(-1);

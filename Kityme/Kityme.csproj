@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="config.json" CopyToOutputDirectory="PreserveNewest" />
+        <None Include=".env" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>
@@ -14,8 +14,8 @@
       <PackageReference Include="DSharpPlus.CommandsNext" Version="4.1.0-nightly-00940" />
       <PackageReference Include="DSharpPlus.Interactivity" Version="4.1.0-nightly-00940" />
       <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0-nightly-00940" />
-      <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="1.7.1" />
-      <PackageReference Include="MongoDB.Driver" Version="2.13.0" />
+      <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="1.7.2" />
+      <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
