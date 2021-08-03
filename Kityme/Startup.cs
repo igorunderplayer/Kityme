@@ -17,30 +17,35 @@ using Kityme.Entities;
 using Kityme.Events.Client;
 using Kityme.Extensions;
 using Kityme.Managers;
-using Newtonsoft.Json;
+using Kityme.Utils;
 
 namespace Kityme
 {
     public class Startup
     {
-        public DiscordClient Client { get; set; }
+        public DiscordClient Client { get; private set; }
         public CommandsNextExtension Commands { get; private set; }
         public SlashCommandsExtension SlashCommands { get; private set; }
-        public LavalinkExtension Lavalink { get; set; }
-        public ConfigJson CfgJson;
+        public LavalinkExtension Lavalink { get; private set; }
+        private BotConfig botConfig;
 
         public async Task RunAsync()
         {
-            string json;
-            await using (FileStream fs = File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "config.json")))
-            using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
-                json = await sr.ReadToEndAsync();
+            string root = Directory.GetCurrentDirectory();
+            string dotenv = Path.Combine(root, ".env");
+            DotEnv.Load(dotenv);
 
-            CfgJson = JsonConvert.DeserializeObject<ConfigJson>(json);
+            botConfig = new BotConfig(
+                Environment.GetEnvironmentVariable("TOKEN"),
+                Environment.GetEnvironmentVariable("LAVALINK_HOST"),
+                Environment.GetEnvironmentVariable("SLAVALINK_HOST"),
+                Environment.GetEnvironmentVariable("LAVALINK_PASSWORD"),
+                Environment.GetEnvironmentVariable("MONGO_URL")
+                );
 
             var config = new DiscordConfiguration
             {
-                Token = CfgJson.Token,
+                Token = botConfig.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 UseRelativeRatelimit = true,
@@ -72,7 +77,7 @@ namespace Kityme
 
             CommandsNextConfiguration commandsConfig = new()
             {
-                StringPrefixes = CfgJson.Prefixes,
+                StringPrefixes = new string[] { "k!", "kityme" },
                 EnableMentionPrefix = true,
                 EnableDms = false,
             };
@@ -91,11 +96,11 @@ namespace Kityme
             SlashCommands.RegisterCommands<MusicSlashCommands>();
 
 
-            string host = CfgJson.LavalinkHost;
+            string host = botConfig.LavalinkHost;
             HttpClient client = new HttpClient();
             var res = await client.GetAsync("https://" + host);
             if (res.StatusCode != System.Net.HttpStatusCode.Unauthorized)
-                host = CfgJson.SLavalinkHost;
+                host = botConfig.SLavalinkHost;
 
             ConnectionEndpoint endpoint = new ConnectionEndpoint
             {
@@ -106,7 +111,7 @@ namespace Kityme
 
             LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
             {
-                Password = CfgJson.Lavalink_Password,
+                Password = botConfig.LavalinkPassword,
                 RestEndpoint = endpoint,
                 SocketEndpoint = endpoint,
                 SocketAutoReconnect = true
@@ -119,7 +124,7 @@ namespace Kityme
                 Timeout = TimeSpan.FromSeconds(30)
             });
 
-            DBManager.Connect(CfgJson.MongoUrl);
+            DBManager.Connect(botConfig.MongoUrl);
 
             await Client.ConnectAsync();
             try
@@ -189,22 +194,5 @@ namespace Kityme
             if (u == null) await e.Author.RegistUserAsync();
             return;
         }
-
-
-        public struct ConfigJson
-        {
-            [JsonProperty("token")] public string Token { get; private set; }
-
-            [JsonProperty("mongo_url")] public string MongoUrl { get; private set; }
-
-            [JsonProperty("lavalink_host")] public string LavalinkHost { get; private set; }
-
-            [JsonProperty("slavalink_host")] public string SLavalinkHost { get; private set; }
-
-            [JsonProperty("lavalink_password")] public string Lavalink_Password { get; private set; }
-
-            [JsonProperty("prefixes")] public string[] Prefixes { get; private set; }
-        }
-
     }
 }

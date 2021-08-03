@@ -14,7 +14,6 @@
     <changedPaths>
       <option value="$PROJECT_DIR$/Kityme/nuget.config" />
       <option value="$PROJECT_DIR$/Kityme/Program.cs" />
-      <option value="$PROJECT_DIR$/Kityme/Kityme.csproj" />
       <option value="$PROJECT_DIR$/Kityme/Extensions/IMongoDatabaseExtension.cs" />
       <option value="$PROJECT_DIR$/Kityme/Managers/DBManager.cs" />
       <option value="$PROJECT_DIR$/Kityme/Extensions/LavalinkNodeConnectionExtension.cs" />
@@ -34,6 +33,10 @@
       <option value="$PROJECT_DIR$/Kityme/Commands/EconomyCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/MusicCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/SlashCommands/MusicSlashCommands.cs" />
+      <option value="$PROJECT_DIR$/Kityme/Kityme.csproj" />
+      <option value="$PROJECT_DIR$/Kityme/config.json" />
+      <option value="$PROJECT_DIR$/Kityme/Util/DotEnv.cs" />
+      <option value="$PROJECT_DIR$/Kityme/BotConfig.cs" />
       <option value="$PROJECT_DIR$/Kityme/Startup.cs" />
     </changedPaths>
   </component>
