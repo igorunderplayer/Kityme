@@ -46,20 +46,25 @@ namespace Kityme.Commands
         {
             Process p = Process.GetCurrentProcess();
             long ram = p.WorkingSet64 / 1024 / 1024;
+            long ram2 = p.PrivateMemorySize64 / 1024 / 1024;
+            ulong id = 477534823011844120;
+
+            DiscordUser owner = await ctx.Client.GetUserAsync(id);
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
                 Title = "Minhas informações",
                 Color = DiscordColor.Blurple,
+                Footer = new DiscordEmbedBuilder.EmbedFooter { Text = $"Criado por {owner.Username}", IconUrl = owner.AvatarUrl },
                 Description = $"🌐 | Servidores: {ctx.Client.Guilds.Count} \n" +
                               $"🏓 | Ping: {ctx.Client.Ping}ms \n" +
                               $"📁 | Total de comandinhos: {ctx.Client.GetCommandsNext().RegisteredCommands.Count} \n" +
                               "\n" +
-                              $"📈 | RAM: {ram}MB"
+                              $"📈 | RAM: {ram}MB \n" +
+                              $"📈 | RAM2 (n sei qual ta certo): {ram2}MB"
             };
 
             await ctx.RespondAsync(embed);
-           
         }
 
         [Command("tabuada"), Description("mostra a tabuada d um numero")]

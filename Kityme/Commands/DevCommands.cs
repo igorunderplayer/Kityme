@@ -10,6 +10,18 @@ namespace Kityme.Commands
 {
     class DevCommands: BaseCommandModule
     {
+        [Command("showguilds"), RequireOwner, Hidden]
+        public async Task ShowGuilds (CommandContext ctx) 
+        {
+            string guilds = string.Empty;
+            foreach(DiscordGuild guild in ctx.Client.Guilds.Values) 
+            {
+                guilds += $"{guild.Name} \n";
+            }
+            
+            await ctx.RespondAsync(guilds);
+        }
+    
         [Command("addmoney"), RequireOwner]
         public async Task AddMoney (CommandContext ctx, double qtd, [RemainingText] DiscordMember member = null)
         {

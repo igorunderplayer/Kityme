@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -81,23 +79,23 @@ namespace Kityme
             };
 
             Commands = Client.UseCommandsNext(commandsConfig);
-
             Commands.CommandExecuted += async (CommandsNextExtension commands, CommandExecutionEventArgs e) =>
             {
                 User u = await e.Context.User.GetAsync();
                 if (u == null) await e.Context.User.RegistUserAsync();
             };
 
-            Commands.RegisterCommands<FunCommands>();
-            Commands.RegisterCommands<InfoCommands>();
-            Commands.RegisterCommands<DevCommands>();
-            Commands.RegisterCommands<RPCommands>();
-            Commands.RegisterCommands<MusicCommands>();
-            Commands.RegisterCommands<EconomyCommands>();
+                Commands.RegisterCommands<FunCommands>();
+                Commands.RegisterCommands<InfoCommands>();
+                Commands.RegisterCommands<DevCommands>();
+                Commands.RegisterCommands<RPCommands>();
+                Commands.RegisterCommands<MusicCommands>();
+                Commands.RegisterCommands<EconomyCommands>();
 
             SlashCommands = Client.UseSlashCommands();
 
-            SlashCommands.RegisterCommands<MusicSlashCommands>();
+                SlashCommands.RegisterCommands<MusicSlashCommands>();
+                SlashCommands.RegisterCommands<TestingSlashCommands>(720709045119352862); // Guild para testes de slash commands
 
 
             ConnectionEndpoint[] endpoint = new[]
@@ -162,8 +160,7 @@ namespace Kityme
         private async Task Client_ComponentInteractionCreated(DiscordClient sender,
             ComponentInteractionCreateEventArgs e)
         {
-            Console.WriteLine("clicked");
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
             if (!MusicManagers._managers.ContainsKey(e.Guild.Id))
                 return;
 
@@ -182,14 +179,14 @@ namespace Kityme
                 case "m_loop":
                     manager._loopEnabled = !manager._loopEnabled;
                     string loop_pmsg = manager._loopEnabled ? "ativado" : "desativado";
-                    await e.Channel.SendMessageAsync($"loop {loop_pmsg}");
-                    //await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent($"loop {msg}"));
+                    await e.Channel.SendMessageAsync($"loop {loop_pmsg} *(pedido por {e.User.Username})*");
+                    //await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent($"loop {loop_pmsg}"));
                     break;
 
                 case "m_shuffle":
                     manager._shuffleEnabled = !manager._shuffleEnabled;
                     string shuffle_msg = manager._shuffleEnabled ? "ativado" : "desativado";
-                    await e.Channel.SendMessageAsync($"embaralhamento {shuffle_msg}");
+                    await e.Channel.SendMessageAsync($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*");
                     //await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent($"loop {msg}"));
                     break;
 
@@ -197,7 +194,7 @@ namespace Kityme
                     await manager.lastMessage?.DeleteAsync();
                     await manager.Connection.DisconnectAsync();
                     manager.removeThis(e.Guild.Id);
-                    await e.Channel.SendMessageAsync("sai do canal!");
+                    await e.Channel.SendMessageAsync("sai do canal! *(pedido por {e.User.Username})*");
                     //await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("sai do canal!"));
                     break;
             }

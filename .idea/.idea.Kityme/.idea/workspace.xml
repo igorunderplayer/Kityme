@@ -28,7 +28,6 @@
       <option value="$PROJECT_DIR$/Kityme/Commands/FunCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/RPCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/InfoCommands.cs" />
-      <option value="$PROJECT_DIR$/Kityme/Commands/DevCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/EconomyCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/MusicCommands.cs" />
       <option value="$PROJECT_DIR$/Kityme/Commands/SlashCommands/MusicSlashCommands.cs" />
@@ -41,6 +40,7 @@
       <option value="$PROJECT_DIR$/Kityme/Util/LoadConfig.cs" />
       <option value="$PROJECT_DIR$/Kityme/Startup.cs" />
       <option value="$PROJECT_DIR$/Kityme/Util/DotEnv.cs" />
+      <option value="$PROJECT_DIR$/Kityme/Commands/DevCommands.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1wC3I1DRrR7JqdqAaHxRbSUGeIK" />

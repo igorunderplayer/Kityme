@@ -402,7 +402,7 @@ namespace Kityme.Commands
                 var interactivity = ctx.Client.GetInteractivity();
                 var pages = interactivity.GeneratePagesInEmbed(q);
 
-                await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, null, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.Ignore, null);
+                await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
 
                 /*DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
                     .WithTitle($"Queue de {ctx.Guild.Name}")
