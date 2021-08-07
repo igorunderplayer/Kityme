@@ -160,7 +160,7 @@ namespace Kityme
         private async Task Client_ComponentInteractionCreated(DiscordClient sender,
             ComponentInteractionCreateEventArgs e)
         {
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             if (!MusicManagers._managers.ContainsKey(e.Guild.Id))
                 return;
 
