@@ -6,6 +6,8 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
+using Kityme.Attributes;
+
 namespace Kityme.Commands
 {
     class InfoCommands: BaseCommandModule
@@ -41,7 +43,7 @@ namespace Kityme.Commands
 
         }
 
-        [Command("botinfo"), Description("mostra minhas informações"), Aliases("bi", "stats")]
+        [Command("botinfo"), Description("mostra minhas informações"), Aliases("bi", "stats"), CommandType("Info")]
         public async Task Botinfo (CommandContext ctx)
         {
             Process p = Process.GetCurrentProcess();
@@ -60,8 +62,7 @@ namespace Kityme.Commands
                               $"🏓 | Ping: {ctx.Client.Ping}ms \n" +
                               $"📁 | Total de comandinhos: {ctx.Client.GetCommandsNext().RegisteredCommands.Count} \n" +
                               "\n" +
-                              $"📈 | RAM: {ram}MB \n" +
-                              $"📈 | RAM2 (n sei qual ta certo): {ram2}MB"
+                              $"📈 | RAM: {ram}MB \n"
             };
 
             await ctx.RespondAsync(embed);

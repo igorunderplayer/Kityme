@@ -75,8 +75,7 @@ namespace Kityme
             {
                 StringPrefixes = new string[] { "k!", "kityme" },
                 EnableMentionPrefix = true,
-                EnableDms = false,
-            };
+                EnableDms = false            };
 
             Commands = Client.UseCommandsNext(commandsConfig);
             Commands.CommandExecuted += async (CommandsNextExtension commands, CommandExecutionEventArgs e) =>
@@ -84,6 +83,8 @@ namespace Kityme
                 User u = await e.Context.User.GetAsync();
                 if (u == null) await e.Context.User.RegistUserAsync();
             };
+
+            //Commands.SetHelpFormatter<KitymeHelpFormatter>();
 
                 Commands.RegisterCommands<FunCommands>();
                 Commands.RegisterCommands<InfoCommands>();
@@ -194,7 +195,7 @@ namespace Kityme
                     await manager.lastMessage?.DeleteAsync();
                     await manager.Connection.DisconnectAsync();
                     manager.removeThis(e.Guild.Id);
-                    await e.Channel.SendMessageAsync("sai do canal! *(pedido por {e.User.Username})*");
+                    await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
                     //await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("sai do canal!"));
                     break;
             }

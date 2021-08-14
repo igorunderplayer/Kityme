@@ -329,6 +329,12 @@ namespace Kityme.Commands
             await ctx.RespondAsync($"loop {msg}");
         }
 
+        [Command("seek")]
+        public async Task Seek(CommandContext ctx, TimeSpan time)
+        {
+            await ctx.RespondAsync(time.TotalMinutes.ToString());
+        }
+
         [Command("shuffle"), Aliases("sf", "aleatorizar")]
         public async Task Shuffle(CommandContext ctx)
         {
@@ -403,14 +409,6 @@ namespace Kityme.Commands
                 var pages = interactivity.GeneratePagesInEmbed(q);
 
                 await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
-
-                /*DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
-                    .WithTitle($"Queue de {ctx.Guild.Name}")
-                    .WithColor(DiscordColor.Purple)
-                    .WithDescription(q)
-                    .WithFooter("vc pode usar k!skip[numero] para pular", ctx.Client.CurrentUser.AvatarUrl);
-
-                await ctx.RespondAsync(embedBuilder);*/
             } else
             {
                 await ctx.RespondAsync("n estou conectado aqui");

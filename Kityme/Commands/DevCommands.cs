@@ -10,7 +10,15 @@ namespace Kityme.Commands
 {
     class DevCommands: BaseCommandModule
     {
-        [Command("showguilds"), RequireOwner, Hidden]
+        [Command("gc"), RequireOwner]
+        public async Task GC (CommandContext ctx)
+        {
+            System.GC.Collect();
+            await ctx.RespondAsync("e");
+        }
+
+
+        [Command("showguilds"), RequireOwner]
         public async Task ShowGuilds (CommandContext ctx) 
         {
             string guilds = string.Empty;
