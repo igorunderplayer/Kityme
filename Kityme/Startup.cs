@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -8,6 +9,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
+using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.Net;
 using DSharpPlus.SlashCommands;
 using Kityme.Commands;
@@ -158,7 +160,25 @@ namespace Kityme
                 }
             }
 
+            Lavalink.NodeDisconnected += Lavalink_NodeDisconnected;
+
             await Task.Delay(-1);
+        }
+
+        private async Task Lavalink_NodeDisconnected(LavalinkNodeConnection sender, NodeDisconnectedEventArgs e)
+        {
+            int i = 0;
+            while ((i < 5) && !sender.IsConnected)
+            {
+                Thread.Sleep(5000 * (i + 1));
+                await Lavalink.ConnectAsync(new()
+                {
+                    Password = botConfig.LavalinkPassword,
+                    RestEndpoint = sender.NodeEndpoint,
+                    SocketEndpoint = sender.NodeEndpoint,
+                    SocketAutoReconnect = true
+                });
+            }
         }
 
         private async Task Client_ComponentInteractionCreated(DiscordClient sender,
