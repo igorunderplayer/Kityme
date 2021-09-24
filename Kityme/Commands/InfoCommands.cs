@@ -24,6 +24,16 @@ namespace Kityme.Commands
             await ctx.RespondAsync(embed);
         }
 
+        [Command("invite"), Aliases("convite"), Description("manda link pra me add")]
+        public async Task Invite (CommandContext ctx)
+        {
+            string invite = $"https://discord.com/oauth2/authorize?client_id={ctx.Client.CurrentUser.Id}&scope=bot+applications.commands&permissions=75361473";
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                .WithTitle("me adicione")
+                .WithDescription($"me adicionando clicando [aqui]({invite})");
+            await ctx.RespondAsync(embedBuilder);
+        }
+
         [Command("lavalink"), Description("mostra informações do lavalink '-")]
         public async Task Lavalink (CommandContext ctx)
         {
