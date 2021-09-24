@@ -198,7 +198,8 @@ namespace Kityme
                     await manager.lastMessage?.DeleteAsync();
                     await manager.Connection.DisconnectAsync();
                     manager.removeThis(e.Guild.Id);
-                    await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder { Content = "sai do canal!" });
+                    //await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
                     //await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("sai do canal!"));
                     break;
             }

@@ -9,7 +9,7 @@ using Kityme.Managers;
 
 namespace Kityme.Commands.SlashCommands
 {
-    public class MusicSlashCommands: SlashCommandModule
+    public class MusicSlashCommands: ApplicationCommandModule
     {
         [SlashCommand("play", "toca musica da sua escolha")]
         public async Task Play(InteractionContext ctx, [Option("musica", "musica q sera buscada")] string query)
