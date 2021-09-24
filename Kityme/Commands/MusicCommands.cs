@@ -170,12 +170,12 @@ namespace Kityme.Commands
             {
                 MusicManagers._managers.Add(ctx.Guild.Id, new GuildMusicManager(ctx.Client, ctx.Guild, channel, (id) => MusicManagers._managers.Remove(id)));
             }
-            PlayResponseType res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, search);
-            if (res == PlayResponseType.SingleTrackLoad)
-                await ctx.RespondAsync($"track adicionada a fila '-");
-            else if (res == PlayResponseType.PlaylistLoad)
+            PlayResponse res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, search);
+            if (res.type == PlayResponseType.SingleTrackLoad)
+                await ctx.RespondAsync($"{res.track.Title} adicionada a fila '-");
+            else if (res.type == PlayResponseType.PlaylistLoad)
                 await ctx.RespondAsync("playlist carregada -");
-            else if (res == PlayResponseType.TrackNotFound)
+            else if (res.type == PlayResponseType.TrackNotFound)
                 await ctx.RespondAsync("n achei");
         }
 
@@ -185,7 +185,7 @@ namespace Kityme.Commands
             if (MusicManagers._managers.ContainsKey(ctx.Guild.Id))
             {
                 GuildMusicManager manager = MusicManagers._managers[ctx.Guild.Id];
-                LavalinkTrack npTrack = manager._queue[manager.actualIndex];
+                LavalinkTrack npTrack = manager._queue[manager.ActualIndex];
 
                 DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
                 {

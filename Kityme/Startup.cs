@@ -177,7 +177,7 @@ namespace Kityme
                     break;
 
                 case "m_skip_previous":
-                    await MusicManagers._managers[e.Guild.Id].Skip(MusicManagers._managers[e.Guild.Id].actualIndex - 1);
+                    await MusicManagers._managers[e.Guild.Id].Skip(MusicManagers._managers[e.Guild.Id].ActualIndex - 1);
                     break;
 
                 case "m_loop":
@@ -195,9 +195,9 @@ namespace Kityme
                     break;
 
                 case "m_stop":
-                    await manager.lastMessage?.DeleteAsync();
+                    await manager.LastMessage?.DeleteAsync();
                     await manager.Connection.DisconnectAsync();
-                    manager.removeThis(e.Guild.Id);
+                    manager.RemoveThis(e.Guild.Id);
                     await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
                     //await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("sai do canal!"));
                     break;

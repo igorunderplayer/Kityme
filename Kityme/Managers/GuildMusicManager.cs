@@ -19,18 +19,18 @@ namespace Kityme.Managers
         public LavalinkGuildConnection Connection { get; set; }
         public LavalinkNodeConnection Node { get; private set; }
         public List<LavalinkTrack> _queue = new();
-        public Func<ulong, bool> removeThis { get; private set; }
+        public Func<ulong, bool> RemoveThis { get; private set; }
         public List<Filter> _filters = new List<Filter>();
         public bool _loopEnabled = false;
         public bool _shuffleEnabled = false;
-        public DiscordMessage lastMessage { get; private set; }
-        public int actualIndex { get; private set; }
+        public DiscordMessage LastMessage { get; private set; }
+        public int ActualIndex { get; private set; }
 
         public GuildMusicManager(DiscordClient client, DiscordGuild guild, DiscordChannel channel, Func<ulong, bool> rmThis)
         {
             this.Client = client;
             Node = Client.GetLavalink().GetIdealNodeConnection(channel.RtcRegion);
-            removeThis = rmThis;
+            RemoveThis = rmThis;
             Connect(guild, channel).Wait();
         }
 
@@ -55,13 +55,13 @@ namespace Kityme.Managers
 
         }
 
-        public async Task<PlayResponseType> Play(DiscordChannel channel, DiscordMember member, string query, Uri uri = null)
+        public async Task<PlayResponse> Play(DiscordChannel channel, DiscordMember member, string query, Uri uri = null)
         {
             LavalinkLoadResult loadResult = uri == null ? await Search(query) : await Node.Rest.GetTracksAsync(uri);
 
 
             if (loadResult?.LoadResultType == LavalinkLoadResultType.NoMatches || loadResult == null)
-                return PlayResponseType.TrackNotFound;
+                return new PlayResponse(PlayResponseType.TrackNotFound);
 
             if (loadResult.LoadResultType == LavalinkLoadResultType.PlaylistLoaded)
             {
@@ -78,10 +78,10 @@ namespace Kityme.Managers
                     LavalinkTrack firstTrack = _queue.First();
                     await Connection.PlayAsync(firstTrack);
                     await SendPlayMessage(firstTrack, channel);
-                    actualIndex = 0;
-                    return PlayResponseType.PlaylistLoad;
+                    ActualIndex = 0;
+                    return new PlayResponse(PlayResponseType.PlaylistLoad);
                 }
-                else return PlayResponseType.PlaylistLoad;
+                else return new PlayResponse(PlayResponseType.PlaylistLoad);
             }
 
             LavalinkTrack track = loadResult.Tracks.First();
@@ -91,12 +91,12 @@ namespace Kityme.Managers
                 _queue.Add(track);
                 await Connection.PlayAsync(track);
                 await SendPlayMessage(track, channel);
-                actualIndex = 0;
-                return PlayResponseType.SingleTrackLoad;
+                ActualIndex = 0;
+                return new PlayResponse(PlayResponseType.SingleTrackLoad, track);
             } else
             {
                 _queue.Add(track);
-                return PlayResponseType.SingleTrackLoad;
+                return new PlayResponse(PlayResponseType.SingleTrackLoad, track);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Kityme.Managers
             LavalinkTrack remove = _queue.ElementAtOrDefault(index);
             if (remove == null) return false;
 
-            if (actualIndex == index)
+            if (ActualIndex == index)
             {
                 await Skip();
                 _queue.Remove(remove);
@@ -138,13 +138,13 @@ namespace Kityme.Managers
                     new DiscordButtonComponent(ButtonStyle.Secondary, "m_shuffle", "", false, new("🔀"))
                 });
 
-            if (lastMessage != null)
-                await lastMessage.DeleteAsync();
+            if (LastMessage != null)
+                await LastMessage.DeleteAsync();
 
             if (c != null)
-                lastMessage = await c.SendMessageAsync(messageBuilder);
+                LastMessage = await c.SendMessageAsync(messageBuilder);
             else
-                lastMessage = await lastMessage?.Channel.SendMessageAsync(messageBuilder);
+                LastMessage = await LastMessage?.Channel.SendMessageAsync(messageBuilder);
         }
 
         public async Task<LavalinkLoadResult> Search (string query)
@@ -161,12 +161,12 @@ namespace Kityme.Managers
         {
             if(skipTo == -1)
             {
-                LavalinkTrack nextTrack = _shuffleEnabled ? _queue[new Random().Next(0, _queue.Count)] : _queue.ElementAtOrDefault(actualIndex + 1);
+                LavalinkTrack nextTrack = _shuffleEnabled ? _queue[new Random().Next(0, _queue.Count)] : _queue.ElementAtOrDefault(ActualIndex + 1);
                 if (nextTrack != null)
                 {
                     await Connection.PlayAsync(nextTrack);
                     await SendPlayMessage(nextTrack);
-                    actualIndex++;
+                    ActualIndex++;
                     return true;
                 } else
                 {
@@ -179,7 +179,7 @@ namespace Kityme.Managers
                 {
                     await Connection.PlayAsync(nextTrack);
                     await SendPlayMessage(nextTrack);
-                    actualIndex = skipTo;
+                    ActualIndex = skipTo;
                     return true;
                 }
                 else
@@ -191,7 +191,7 @@ namespace Kityme.Managers
 
         public bool CanChangeQueue(DiscordMember u)
         {
-            if (_queue[actualIndex].GetRequester().Id == u.Id) return true;
+            if (_queue[ActualIndex].GetRequester().Id == u.Id) return true;
             if (u.Permissions.HasPermission(Permissions.ManageMessages)) return true;
 
             DiscordRole djRole = u.Guild.Roles.FirstOrDefault(r => r.Value.Name == "DJ").Value;
@@ -265,7 +265,7 @@ namespace Kityme.Managers
             if(e.Reason == TrackEndReason.Finished)
             {
                 ulong guildId = sender.Guild.Id;
-                if ((_queue.Count - (actualIndex + 1)) <= 0)
+                if ((_queue.Count - (ActualIndex + 1)) <= 0)
                 {
                     if (_loopEnabled)
                     {
@@ -273,25 +273,36 @@ namespace Kityme.Managers
                         await SendPlayMessage(_queue[0]);
                         return;
                     }
-                    await lastMessage.DeleteAsync();
+                    await LastMessage.DeleteAsync();
                     await sender.DisconnectAsync();
-                    removeThis(sender.Guild.Id);
-                    await lastMessage.Channel.SendMessageAsync("todas musicas da fila acabaram!");
+                    RemoveThis(sender.Guild.Id);
+                    await LastMessage.Channel.SendMessageAsync("todas musicas da fila acabaram!");
                 }
                 else
                 {
-                    int nextTrackIndex = _shuffleEnabled ? new Random().Next(0, _queue.Count) : actualIndex + 1;
+                    int nextTrackIndex = _shuffleEnabled ? new Random().Next(0, _queue.Count) : ActualIndex + 1;
                     LavalinkTrack nextTrack = _queue.ElementAtOrDefault(nextTrackIndex);
                     if (nextTrack != null)
                     {
                         await sender.PlayAsync(nextTrack);
                         await SendPlayMessage(nextTrack);
-                        actualIndex = nextTrackIndex;
+                        ActualIndex = nextTrackIndex;
                     }
                 }
                 return;
             }
             
+        }
+    }
+
+    public class PlayResponse
+    {
+        public PlayResponseType type;
+        public LavalinkTrack track;
+        public PlayResponse (PlayResponseType type, LavalinkTrack track = null)
+        {
+            this.type = type;
+            this.track = track;
         }
     }
 

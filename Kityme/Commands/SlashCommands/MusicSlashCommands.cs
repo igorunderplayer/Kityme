@@ -53,12 +53,12 @@ namespace Kityme.Commands.SlashCommands
             if (Uri.IsWellFormedUriString(query, UriKind.RelativeOrAbsolute))
                 uri = new Uri(query);
 
-            PlayResponseType res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, query, uri);
-            if (res == PlayResponseType.SingleTrackLoad)
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = "track adicionada na fila'-" });
-            else if (res == PlayResponseType.PlaylistLoad)
+            PlayResponse res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, query, uri);
+            if (res.type == PlayResponseType.SingleTrackLoad)
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = $"{res.track.Title} adicionada na fila'-" });
+            else if (res.type == PlayResponseType.PlaylistLoad)
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = "playlist carregada -" });
-            else if(res == PlayResponseType.TrackNotFound)
+            else if(res.type == PlayResponseType.TrackNotFound)
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = "n achei" });
         }
         
@@ -114,7 +114,7 @@ namespace Kityme.Commands.SlashCommands
             if (MusicManagers._managers.ContainsKey(ctx.Guild.Id))
             {
                 GuildMusicManager manager = MusicManagers._managers[ctx.Guild.Id];
-                LavalinkTrack npTrack = manager._queue[manager.actualIndex];
+                LavalinkTrack npTrack = manager._queue[manager.ActualIndex];
 
                 DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
                 {

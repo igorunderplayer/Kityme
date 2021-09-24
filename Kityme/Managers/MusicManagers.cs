@@ -25,7 +25,7 @@ namespace Kityme.Managers
                     if(manager.Connection != null)
                         await manager.Connection.DisconnectAsync();
                     manager.Connection = await manager.Connection?.Node.ConnectAsync(voiceState.Channel);
-                    await manager.Connection.PlayAsync(manager._queue[manager.actualIndex]);
+                    await manager.Connection.PlayAsync(manager._queue[manager.ActualIndex]);
                 }
             }
             return;
