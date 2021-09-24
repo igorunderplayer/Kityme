@@ -20,6 +20,32 @@ namespace Kityme.Commands
             await ctx.RespondAsync($"{mine} tem {u.Money} kitycoins, ta ricass neh meu");
         }
 
+        [Command("cats"), Description("mostra os gatos q vc ou outro usuario tem'-")]
+        public async Task MyCats (CommandContext ctx, [RemainingText] DiscordMember member = null)
+        {
+            User user = null;
+            if (member == null)
+                user = await ctx.User.GetAsync();
+            else
+                user = await member.GetAsync();
+
+            string cats = string.Empty;
+
+            foreach(Cat cat in user.Cats)
+            {
+                cats += $"{cat.name} - Atratividade: {cat.atractive} \n";
+            }
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+            {
+                Title = "gatinhos'-",
+                Description = string.IsNullOrEmpty(cats) ? "nenhum haha" : cats,
+                Color = DiscordColor.Gray
+            };
+
+            await ctx.RespondAsync(embedBuilder);
+        }
+
         [Command("daily"), Description("te da dinheiro de graca a cada 1 dia'-")]
         public async Task Daily (CommandContext ctx)
         {
