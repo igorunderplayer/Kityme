@@ -10,7 +10,7 @@ using Kityme.Attributes;
 
 namespace Kityme.Commands
 {
-    class InfoCommands: BaseCommandModule
+    public class InfoCommands: BaseCommandModule
     {
         [Command("ping")]
         public async Task Ping (CommandContext ctx)
@@ -48,7 +48,6 @@ namespace Kityme.Commands
         {
             Process p = Process.GetCurrentProcess();
             long ram = p.WorkingSet64 / 1024 / 1024;
-            long ram2 = p.PrivateMemorySize64 / 1024 / 1024;
             ulong id = 477534823011844120;
 
             DiscordUser owner = await ctx.Client.GetUserAsync(id);

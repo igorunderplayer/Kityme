@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Kityme.Attributes;
 using System.Text;
+using System;
 
 namespace Kityme
 {
-    public class KitymeHelpFormatter : BaseHelpFormatter
+    public class KitymeHelpFormatter : DefaultHelpFormatter
     {
         private DiscordEmbedBuilder embedBuilder;
 
@@ -21,14 +22,13 @@ namespace Kityme
 
 
             StringBuilder stringBuiler = new StringBuilder();
-
-            var info = commands.Where(x => (x.Value.CustomAttributes.Where(x => x.GetType() == typeof(CommandTypeAttribute)).FirstOrDefault() as CommandTypeAttribute)?.Type == "Info").ToArray();
-            ctx.RespondAsync(info.Count().ToString());
+            ctx.RespondAsync(commands.Values.Where(cmd => cmd.Name == "botinfo").Count().ToString());
+            var info = commands.Values.Where(cmd => cmd.Module.ModuleType.Name == "InfoCommands");
 
             stringBuiler.AppendLine($"**Info**").AppendLine();
             foreach (var infoCommand in info)
             {
-                stringBuiler.Append($"`{infoCommand.Value.Name}`, ");
+                stringBuiler.Append($"`{infoCommand.Name}`, ");
             }
 
             embedBuilder.WithDescription(stringBuiler.ToString());
@@ -37,22 +37,6 @@ namespace Kityme
         public override CommandHelpMessage Build()
         {
             return new CommandHelpMessage(embed: embedBuilder.Build());
-        }
-
-        public override BaseHelpFormatter WithCommand(Command command)
-        {
-            embedBuilder
-                .WithTitle("Ajuda")
-                .WithDescription($"`{command.Name}`: {command.Description}")
-                .AddField("Aliases", string.Join(", ", command.Aliases));
-
-
-            return this;
-        }
-
-        public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
-        {
-            return this;
         }
     }
 }

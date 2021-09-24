@@ -1,6 +1,8 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +36,41 @@ namespace Kityme.Commands
             };
 
             await ctx.RespondAsync(embed);
+        }
+
+        [Command("messageminigame"), Description("comando de minigame copiado do Starciad")]
+        public async Task MessageMiniGame (CommandContext ctx)
+        {
+            Random rd = new();
+            var channels = ctx.Guild.Channels.Values.Where(ch => !ch.IsNSFW && !ch.IsPrivate);
+            DiscordChannel channel = channels.ElementAt(rd.Next(0, channels.Count()));
+            var messages = await channel.GetMessagesAsync(50);
+            DiscordMessage msg = messages[rd.Next(0, messages.Count)];
+
+            var interactivity = ctx.Client.GetInteractivity();
+            var myMesssage = await ctx.RespondAsync($"vc tem 30 segundos para responder quem enviou esta mensagem: \n \"{msg.Content}\"");
+            var result = await interactivity.WaitForMessageAsync((DiscordMessage userMessage) =>
+                userMessage.Author.Id == ctx.User.Id);
+
+            if(result.TimedOut)
+            {
+                await myMesssage.ModifyAsync("tempo esgotado!");
+                return;
+            }
+
+            DiscordUser memberInMessage = result.Result.MentionedUsers.FirstOrDefault();
+            memberInMessage ??= ctx.Guild.Members.Values.Where(x => (x.Username.ToLower() == result.Result.Content.ToLower()) || (x.Id.ToString() == result.Result.Content)).FirstOrDefault();
+            Console.WriteLine($"\n {memberInMessage?.Username} \n");
+
+            if(memberInMessage?.Id == msg.Author.Id)
+            {
+                await ctx.RespondAsync("parabens! vc acertou!");
+                return;
+            } else
+            {
+                await ctx.RespondAsync("q pena, vc errou");
+                return;
+            }
         }
 
         [Command("bomdia")]

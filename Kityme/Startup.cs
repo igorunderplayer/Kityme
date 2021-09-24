@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
@@ -52,7 +53,6 @@ namespace Kityme
                           | DiscordIntents.GuildMessages
                           | DiscordIntents.GuildMessageReactions
                           | DiscordIntents.GuildMembers
-                          | DiscordIntents.GuildBans
                           | DiscordIntents.GuildVoiceStates
             };
 
@@ -67,6 +67,8 @@ namespace Kityme
                 if (e.Message.Content.StartsWith($"<@{client.CurrentUser.Id}>") ||
                     e.Message.Content.StartsWith($"<!@{client.CurrentUser.Id}>"))
                     await e.Message.RespondAsync("'- se quise ve meus comando usa k!help 👍");
+
+                await CheckUser(e.Author).ConfigureAwait(false);
                 
                 return;
             };
@@ -75,7 +77,8 @@ namespace Kityme
             {
                 StringPrefixes = new string[] { "k!", "kityme" },
                 EnableMentionPrefix = true,
-                EnableDms = false            };
+                EnableDms = false
+            };
 
             Commands = Client.UseCommandsNext(commandsConfig);
             Commands.CommandExecuted += async (CommandsNextExtension commands, CommandExecutionEventArgs e) =>
@@ -84,7 +87,7 @@ namespace Kityme
                 if (u == null) await e.Context.User.RegistUserAsync();
             };
 
-            //Commands.SetHelpFormatter<KitymeHelpFormatter>();
+            Commands.SetHelpFormatter<KitymeHelpFormatter>();
 
                 Commands.RegisterCommands<FunCommands>();
                 Commands.RegisterCommands<InfoCommands>();
@@ -201,6 +204,12 @@ namespace Kityme
             }
 
             return;
+        }
+
+        private async Task CheckUser (DiscordUser user)
+        {
+            User u = await user.GetAsync();
+            if (u == null) await user.RegistUserAsync();
         }
 
         private async Task Client_MessageCreated(DiscordClient client, MessageCreateEventArgs e)
