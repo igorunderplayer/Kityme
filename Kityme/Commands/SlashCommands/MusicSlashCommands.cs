@@ -54,11 +54,11 @@ namespace Kityme.Commands.SlashCommands
                 uri = new Uri(query);
 
             PlayResponse res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, query, uri);
-            if (res.type == PlayResponseType.SingleTrackLoad)
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = $"{res.track.Title} adicionada na fila'-" });
-            else if (res.type == PlayResponseType.PlaylistLoad)
+            if (res.Type == PlayResponseType.SingleTrackLoad)
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = $"{res.Track.Title} adicionada na fila'-" });
+            else if (res.Type == PlayResponseType.PlaylistLoad)
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = "playlist carregada -" });
-            else if(res.type == PlayResponseType.TrackNotFound)
+            else if(res.Type == PlayResponseType.TrackNotFound)
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new() { Content = "n achei" });
         }
         

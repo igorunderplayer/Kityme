@@ -171,11 +171,11 @@ namespace Kityme.Commands
                 MusicManagers._managers.Add(ctx.Guild.Id, new GuildMusicManager(ctx.Client, ctx.Guild, channel, (id) => MusicManagers._managers.Remove(id)));
             }
             PlayResponse res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, search);
-            if (res.type == PlayResponseType.SingleTrackLoad)
-                await ctx.RespondAsync($"{res.track.Title} adicionada a fila '-");
-            else if (res.type == PlayResponseType.PlaylistLoad)
+            if (res.Type == PlayResponseType.SingleTrackLoad)
+                await ctx.RespondAsync($"{res.Track.Title} adicionada a fila '-");
+            else if (res.Type == PlayResponseType.PlaylistLoad)
                 await ctx.RespondAsync("playlist carregada -");
-            else if (res.type == PlayResponseType.TrackNotFound)
+            else if (res.Type == PlayResponseType.TrackNotFound)
                 await ctx.RespondAsync("n achei");
         }
 

@@ -297,12 +297,12 @@ namespace Kityme.Managers
 
     public class PlayResponse
     {
-        public PlayResponseType type;
-        public LavalinkTrack track;
+        public PlayResponseType Type { get; private set; }
+        public LavalinkTrack Track { get; private set; }
         public PlayResponse (PlayResponseType type, LavalinkTrack track = null)
         {
-            this.type = type;
-            this.track = track;
+            this.Type = type;
+            this.Track = track;
         }
     }
 
