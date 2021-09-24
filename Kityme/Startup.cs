@@ -171,6 +171,7 @@ namespace Kityme
             while ((i < 5) && !sender.IsConnected)
             {
                 Thread.Sleep(5000 * (i + 1));
+                i++;
                 await Lavalink.ConnectAsync(new()
                 {
                     Password = botConfig.LavalinkPassword,
@@ -230,17 +231,6 @@ namespace Kityme
         {
             User u = await user.GetAsync();
             if (u == null) await user.RegistUserAsync();
-        }
-
-        private async Task Client_MessageCreated(DiscordClient client, MessageCreateEventArgs e)
-        {
-            if (e.Message.Content.StartsWith($"<@{client.CurrentUser.Id}>") ||
-                e.Message.Content.StartsWith($"<!@{client.CurrentUser.Id}>"))
-                await e.Message.RespondAsync("'- se quise ve meus comando usa k!help 👍");
-
-            User u = await e.Author.GetAsync();
-            if (u == null) await e.Author.RegistUserAsync();
-            return;
         }
     }
 }
