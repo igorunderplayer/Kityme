@@ -196,28 +196,26 @@ namespace Kityme
             {
                 case "m_skip":
                     await MusicManagers._managers[e.Guild.Id].Skip(-1);
-                    await e.Interaction.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"pulado! *(pedido por {e.User.Username})*"));
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"pulado! *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_skip_previous":
                     await MusicManagers._managers[e.Guild.Id].Skip(MusicManagers._managers[e.Guild.Id].ActualIndex - 1);
-                    await e.Interaction.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"pulado (soq para anterior)! *(pedido por {e.User.Username})*"));
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"pulado (soq para anterior)! *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_loop":
                     manager._loopEnabled = !manager._loopEnabled;
                     string loop_pmsg = manager._loopEnabled ? "ativado" : "desativado";
                     //await e.Channel.SendMessageAsync($"loop {loop_pmsg} *(pedido por {e.User.Username})*");
-                    await e.Interaction.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"loop {loop_pmsg} *(pedido por {e.User.Username})*"));
-                    //await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent($"loop {loop_pmsg}"));
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"loop {loop_pmsg} *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_shuffle":
                     manager._shuffleEnabled = !manager._shuffleEnabled;
                     string shuffle_msg = manager._shuffleEnabled ? "ativado" : "desativado";
                     //await e.Channel.SendMessageAsync($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*");
-                    await e.Interaction.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*"));
-                    //await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent($"loop {msg}"));
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_stop":
@@ -225,8 +223,7 @@ namespace Kityme
                     await manager.Connection.DisconnectAsync();
                     manager.RemoveThis(e.Guild.Id);
                     //await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
-                    await e.Interaction.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"sai do canal! *(pedido por {e.User.Username})*"));
-                    //await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("sai do canal!"));
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"sai do canal! *(pedido por {e.User.Username})*"));
                     break;
             }
 
