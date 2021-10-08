@@ -53,8 +53,6 @@ namespace Kityme
 
                 Intents = DiscordIntents.Guilds
                           | DiscordIntents.GuildMessages
-                          | DiscordIntents.GuildMessageReactions
-                          | DiscordIntents.GuildMembers
                           | DiscordIntents.GuildVoiceStates
             };
 
