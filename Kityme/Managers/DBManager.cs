@@ -17,7 +17,7 @@ namespace Kityme.Managers
             Client = new MongoClient(mongoURL);
             Database = Client.GetDatabase("kityme");
 
-            UserCollection = Database.CreateCol<User>();
+            UserCollection = Database.UseCollection<User>();
         }
 
         public static async Task ReplaceUserAsync(User user)

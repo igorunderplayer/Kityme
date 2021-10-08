@@ -89,6 +89,7 @@ namespace Kityme
 
             /// Commands.SetHelpFormatter<KitymeHelpFormatter>();
 
+                Commands.RegisterCommands<ModCommands>();
                 Commands.RegisterCommands<FunCommands>();
                 Commands.RegisterCommands<InfoCommands>();
                 Commands.RegisterCommands<DevCommands>();
