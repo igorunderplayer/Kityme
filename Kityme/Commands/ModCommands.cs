@@ -13,7 +13,7 @@ namespace Kityme.Commands
         {
             var messages = await ctx.Channel.GetMessagesAsync(count + 1);
             await ctx.Channel.DeleteMessagesAsync(messages);
-            await ctx.RespondAsync($"{count} mensagens apagadas por ${ctx.User.Mention}");
+            await ctx.RespondAsync($"{count} mensagens apagadas por {ctx.User.Mention}");
         }
     }
 }
