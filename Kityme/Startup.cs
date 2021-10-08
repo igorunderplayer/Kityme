@@ -89,7 +89,7 @@ namespace Kityme
                 if (u == null) await e.Context.User.RegistUserAsync();
             };
 
-            Commands.SetHelpFormatter<KitymeHelpFormatter>();
+            /// Commands.SetHelpFormatter<KitymeHelpFormatter>();
 
                 Commands.RegisterCommands<FunCommands>();
                 Commands.RegisterCommands<InfoCommands>();
