@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 
 using Kityme.Attributes;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace Kityme.Commands
 {
@@ -22,6 +24,28 @@ namespace Kityme.Commands
                 .WithDescription($"meu ping é {ping}ms");
 
             await ctx.RespondAsync(embed);
+        }
+
+        [Command("fox")]
+        public async Task Fox (CommandContext ctx)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://randomfox.ca");
+                HttpResponseMessage response = await client.GetAsync("/floof");
+                if (response.IsSuccessStatusCode)
+                {
+                    var fox = await response.Content.ReadAsStringAsync();
+                    Fox data = JsonConvert.DeserializeObject<Fox>(fox);
+
+                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                        .WithTitle("raposious")
+                        .WithColor(DiscordColor.Orange)
+                        .WithImageUrl(data.Image);
+
+                    await ctx.RespondAsync(embedBuilder);
+                }
+            }
         }
 
         [Command("invite"), Aliases("convite"), Description("manda link pra me add")]
@@ -103,5 +127,11 @@ namespace Kityme.Commands
 
             await ctx.RespondAsync(embed);
         }
+    }
+
+    public struct Fox
+    {
+        [JsonProperty] public string Image { get; set; }
+        [JsonProperty] public string Link { get; set; }
     }
 }
