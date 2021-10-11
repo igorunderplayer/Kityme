@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -19,6 +21,7 @@ using Kityme.Events.Client;
 using Kityme.Extensions;
 using Kityme.Managers;
 using Kityme.Utils;
+using Newtonsoft.Json;
 
 namespace Kityme
 {
@@ -223,6 +226,19 @@ namespace Kityme
                     manager.RemoveThis(e.Guild.Id);
                     //await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
                     await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"sai do canal! *(pedido por {e.User.Username})*"));
+                    break;
+
+                case "sm_select":
+                    StringBuilder stringBuilder = new StringBuilder();
+                    foreach(string value in e.Values)
+                    {
+                        // LavalinkTrack track = JsonConvert.DeserializeObject<LavalinkTrack>(jsonTrack);
+                        var res = await manager.Node.Rest.GetTracksAsync(value);
+                        LavalinkTrack track = res.Tracks.First();
+                        manager._queue.Add(track);
+                        stringBuilder.Append($" {track.Title} |");
+                    }
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"{stringBuilder} adicionado na fila *(pedido por {e.User.Username})*"));
                     break;
             }
 

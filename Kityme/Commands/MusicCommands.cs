@@ -2,17 +2,16 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
-using DSharpPlus.Lavalink.EventArgs;
 using System;
-using System.Threading;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Kityme.Managers;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Kityme.Commands
 {
@@ -53,6 +52,52 @@ namespace Kityme.Commands
             {
                 MusicManagers._managers.Add(ctx.Guild.Id, new GuildMusicManager(ctx.Client, ctx.Guild, channel, (id) => MusicManagers._managers.Remove(id)));
             }
+        }
+
+        [Command("search")]
+        public async Task Search (CommandContext ctx, [RemainingText] string query)
+        {
+            LavalinkExtension lava = ctx.Client.GetLavalink();
+            if (!lava.ConnectedNodes.Any())
+            {
+                await ctx.RespondAsync("Lavalink n ta conectado");
+                return;
+            }
+
+            GuildMusicManager manager = null;
+            if (MusicManagers._managers.ContainsKey(ctx.Guild.Id))
+                manager = MusicManagers._managers[ctx.Guild.Id];
+
+            LavalinkNodeConnection node = manager?.Node ?? lava.ConnectedNodes.Values.First();
+
+            LavalinkLoadResult result = await node.Rest.GetTracksAsync(query);
+            var tracks = result.Tracks.Take(10);
+            await ctx.RespondAsync(tracks.Count().ToString());
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < tracks.Count(); i++)
+            {
+                LavalinkTrack track = tracks.ElementAt(i);
+                stringBuilder.AppendLine($"{i + 1}| {track.Title}");
+            }
+
+            var messageBuilder = new DiscordMessageBuilder()
+                .WithContent($"resultado da busca: \n\n{stringBuilder}");
+
+            if (manager != null)
+            {
+                DiscordSelectComponentOption[] options = new DiscordSelectComponentOption[tracks.Count()];
+                for (int i = 0; i < tracks.Count(); i++)
+                {
+                    LavalinkTrack track = tracks.ElementAt(i);
+                    options[i] = new DiscordSelectComponentOption($"{i + 1}| {track.Title}", track.Uri.AbsoluteUri);
+                }
+                DiscordSelectComponent component = new DiscordSelectComponent("sm_select", "Selecione uma musica para adicionar", options, maxOptions: tracks.Count());
+                Console.WriteLine(component.Options.Count.ToString());
+                messageBuilder.AddComponents(component);
+            }
+                await ctx.RespondAsync(messageBuilder);
         }
 
         [Command("leave"), Aliases("dc", "disconnect", "stop")]
