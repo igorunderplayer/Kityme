@@ -170,6 +170,17 @@ namespace Kityme.Managers
                     return true;
                 } else
                 {
+                    if(_loopEnabled)
+                    {
+                        nextTrack = _queue.ElementAtOrDefault(0);
+                        if(nextTrack != null)
+                        {
+                            await Connection.PlayAsync(nextTrack);
+                            await SendPlayMessage(nextTrack);
+                            ActualIndex = 0;
+                            return true;
+                        }
+                    }
                     return false;
                 }
             } else
