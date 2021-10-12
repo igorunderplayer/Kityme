@@ -85,7 +85,7 @@ namespace Kityme.Commands
             ulong id = 477534823011844120;
 
             DiscordUser owner = await ctx.Client.GetUserAsync(id);
-            var time = p.TotalProcessorTime;
+            var time = DateTime.UtcNow - p.StartTime.ToUniversalTime();
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
