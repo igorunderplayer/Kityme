@@ -85,6 +85,7 @@ namespace Kityme.Commands
             ulong id = 477534823011844120;
 
             DiscordUser owner = await ctx.Client.GetUserAsync(id);
+            var time = p.TotalProcessorTime;
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
@@ -95,7 +96,8 @@ namespace Kityme.Commands
                               $"🏓 | Ping: {ctx.Client.Ping}ms \n" +
                               $"📁 | Total de comandinhos: {ctx.Client.GetCommandsNext().RegisteredCommands.Count} \n" +
                               "\n" +
-                              $"📈 | RAM: {ram}MB \n"
+                              $"📈 | RAM: {ram}MB \n" +
+                              $"Uptime(tavez): {time.ToString("h'h 'm'm 's's'")} "
             };
 
             await ctx.RespondAsync(embed);
