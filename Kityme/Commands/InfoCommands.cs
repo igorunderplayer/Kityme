@@ -87,6 +87,7 @@ namespace Kityme.Commands
             DiscordUser owner = await ctx.Client.GetUserAsync(id);
             var time = DateTime.UtcNow - p.StartTime.ToUniversalTime();
             var threads = p.Threads.Count;
+            
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
