@@ -86,6 +86,7 @@ namespace Kityme.Commands
 
             DiscordUser owner = await ctx.Client.GetUserAsync(id);
             var time = DateTime.UtcNow - p.StartTime.ToUniversalTime();
+            var threads = p.Threads.Count;
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
@@ -97,7 +98,9 @@ namespace Kityme.Commands
                               $"📁 | Total de comandinhos: {ctx.Client.GetCommandsNext().RegisteredCommands.Count} \n" +
                               "\n" +
                               $"📈 | RAM: {ram}MB \n" +
-                              $"Uptime(tavez): {time.ToString("h'h 'm'm 's's'")} "
+                              $"Uptime(tavez): {time.ToString("h'h 'm'm 's's'")} \n" +
+                              $"Threads(tavez tbm): {threads}"
+
             };
 
             await ctx.RespondAsync(embed);
