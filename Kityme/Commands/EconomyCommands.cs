@@ -12,16 +12,34 @@ namespace Kityme.Commands
     class EconomyCommands: BaseCommandModule
     {
         [Command("saldo"), Aliases("atm", "balance", "bal")]
-        public async Task Saldo(CommandContext ctx, [RemainingText] DiscordMember member = null)
+        public async Task Saldo(CommandContext ctx, [RemainingText] DiscordUser member = null)
         {
-            member ??= ctx.Member;
+            member ??= ctx.User;
             User u = await member.GetAsync();
             string mine = member.Id == ctx.User.Id ? "se" : member.Username;
             await ctx.RespondAsync($"{mine} tem {u.Money} kitycoins, ta ricass neh meu");
         }
 
+        [Command("pay"), Aliases("pagar"), Description("paga alguem")]
+        public async Task Pay (CommandContext ctx, double qtd, [RemainingText] DiscordMember user)
+        {
+            User author = await ctx.User.GetAsync();
+            User receiver = await user.GetAsync();
+
+            author.RemoveMoney(qtd);
+            receiver.AddMoney(qtd);
+
+            await DBManager.ReplaceUserAsync(author);
+            await DBManager.ReplaceUserAsync(receiver);
+
+            await ctx.RespondAsync($"vc pago {qtd} kitycoins com suceso!");
+
+        }
+
+
+
         [Command("cats"), Description("mostra os gatos q vc ou outro usuario tem'-")]
-        public async Task MyCats (CommandContext ctx, [RemainingText] DiscordMember member = null)
+        public async Task MyCats (CommandContext ctx, [RemainingText] DiscordUser member = null)
         {
             User user = null;
             if (member == null)
