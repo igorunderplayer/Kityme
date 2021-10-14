@@ -20,7 +20,7 @@ namespace Kityme.Commands
             await ctx.RespondAsync($"{mine} tem {u.Money} kitycoins, ta ricass neh meu");
         }
 
-        [Command("pay"), Aliases("pagar"), Description("paga alguem")]
+        /*[Command("pay"), Aliases("pagar"), Description("paga alguem")]
         public async Task Pay (CommandContext ctx, double qtd, [RemainingText] DiscordMember user)
         {
             User author = await ctx.User.GetAsync();
@@ -34,7 +34,7 @@ namespace Kityme.Commands
 
             await ctx.RespondAsync($"vc pago {qtd} kitycoins com suceso!");
 
-        }
+        }*/
 
 
 
