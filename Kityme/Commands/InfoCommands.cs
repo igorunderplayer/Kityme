@@ -26,6 +26,7 @@ namespace Kityme.Commands
             await ctx.RespondAsync(embed);
         }
 
+
         [Command("fox")]
         public async Task Fox (CommandContext ctx)
         {

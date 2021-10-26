@@ -18,6 +18,13 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
       <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="WaxImage">
+        <HintPath>..\..\..\..\..\..\Downloads\WaxImage\WaxImage.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

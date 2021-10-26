@@ -6,6 +6,10 @@ using System;
 using System.Threading.Tasks;
 using Kityme.Extensions;
 using Kityme.Managers;
+using WaxImage;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Kityme.Commands
 {
@@ -20,11 +24,26 @@ namespace Kityme.Commands
             await ctx.RespondAsync($"{mine} tem {u.Money} kitycoins, ta ricass neh meu");
         }
 
-        /*[Command("pay"), Aliases("pagar"), Description("paga alguem")]
+
+        [Command("pay"), Aliases("pagar"), Description("paga alguem")]
         public async Task Pay (CommandContext ctx, double qtd, [RemainingText] DiscordMember user)
         {
+            if(double.IsNaN(qtd) || double.IsInfinity(qtd))
+            {
+                await ctx.RespondAsync("😳");
+                return;
+            }
+
+
             User author = await ctx.User.GetAsync();
             User receiver = await user.GetAsync();
+
+            if(qtd > 1)
+            {
+                await ctx.RespondAsync("n me faz perder tempo \nvc perdeu 100 dinheiros");
+                author.RemoveMoney(100);
+                await DBManager.ReplaceUserAsync(author);
+            }
 
             author.RemoveMoney(qtd);
             receiver.AddMoney(qtd);
@@ -34,7 +53,7 @@ namespace Kityme.Commands
 
             await ctx.RespondAsync($"vc pago {qtd} kitycoins com suceso!");
 
-        }*/
+        }
 
 
 
