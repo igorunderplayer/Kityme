@@ -93,7 +93,7 @@ namespace Kityme.Commands
                 return;
             } else
             {
-                double money = new Random().Next(0, 250);
+                double money = new Random().Next(0, 250) * user.RewardMultiplier;
                 user.AddMoney(money);
                 user.UpdateDailyTimestamp(DateTime.Now);
                 await DBManager.ReplaceUserAsync(user);
@@ -176,7 +176,7 @@ namespace Kityme.Commands
                 {
                     total += cat.atractive;
                 }
-                double money = total * 100;
+                double money = total * 100 * user.RewardMultiplier;
                 user.AddMoney(money);
                 user.ShowTimestamp = DateTime.Now;
                 await DBManager.ReplaceUserAsync(user);
@@ -202,7 +202,7 @@ namespace Kityme.Commands
                 {
                     total += cat.atractive;
                 }
-                double money = total * 25;
+                double money = total * 25 * user.RewardMultiplier;
                 user.AddMoney(money);
                 user.YTVideoTimestamp = DateTime.Now;
                 await DBManager.ReplaceUserAsync(user);
