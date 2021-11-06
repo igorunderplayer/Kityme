@@ -59,6 +59,13 @@ namespace Kityme.Commands
             await ctx.RespondAsync(embedBuilder);
         }
 
+        [Command("messageinfo"), RequireOwner]
+        public async Task messageinfo(CommandContext ctx, [RemainingText] DiscordMessage message = null)
+        {
+            message ??= ctx.Message;
+            await ctx.RespondAsync(message.Content);
+        }
+
         [Command("lavalink"), Description("mostra informações do lavalink '-")]
         public async Task Lavalink (CommandContext ctx)
         {

@@ -126,7 +126,8 @@ namespace Kityme.Commands
                 await msg.DeleteAsync();
             } else
             {
-                var newUser = new User(user.ID);
+                await result.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+                User newUser = new User(user.ID);
                 newUser.RewardMultiplier = user.RewardMultiplier + totalMultiplier;
                 await DBManager.ReplaceUserAsync(newUser);
                 await ctx.RespondAsync("vc foi resetado com sucesso 🗿");
