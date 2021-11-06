@@ -6,7 +6,10 @@ using System;
 using System.Threading.Tasks;
 using Kityme.Extensions;
 using Kityme.Managers;
-
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus;
+using System.Collections.Generic;
 
 namespace Kityme.Commands
 {
@@ -96,6 +99,39 @@ namespace Kityme.Commands
                 await DBManager.ReplaceUserAsync(user);
                 await ctx.RespondAsync($"palmas 👏, vc ganhou incriveis {money} kitycois totalmente de graça '-");
             }
+        }
+
+        [Command("resetme")]
+        public async Task ResetMe (CommandContext ctx)
+        {
+            User user = await ctx.User.GetAsync();
+            float totalMultiplier = 0f;
+            foreach(Cat cat in user.Cats)
+            {
+                totalMultiplier += 0.1f;
+                totalMultiplier += cat.atractive / 10;
+            }
+            DiscordMessageBuilder builder = new DiscordMessageBuilder()
+                .WithContent($"voce tem certeza disso? isso ira resetar todos seus gatinhos e dinheiro (vc recebera {totalMultiplier} pontos de prestigio(o bombom la?))")
+                .AddComponents(
+                    new DiscordButtonComponent(ButtonStyle.Danger, "peipei", "", false, new("✅"))
+                );
+
+            DiscordMessage msg = await ctx.RespondAsync(builder);
+            var inte = ctx.Client.GetInteractivity();
+            var result = await msg.WaitForButtonAsync();
+
+            if (result.TimedOut)
+            {
+                await msg.DeleteAsync();
+            } else
+            {
+                var newUser = new User(user.ID);
+                newUser.RewardMultiplier = user.RewardMultiplier + totalMultiplier;
+                await DBManager.ReplaceUserAsync(newUser);
+                await ctx.RespondAsync("vc foi resetado com sucesso 🗿");
+            }
+            
         }
 
         [Command("buy"), Aliases("comprar"), Description("compra algo ora'-")]

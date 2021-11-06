@@ -10,6 +10,7 @@ namespace Kityme.Entities
         [BsonId]
         public ulong ID { get; private set; }
         public double Money { get; private set; }
+        public float RewardMultiplier { get; set; }
         public List<Cat> Cats { get; private set; } = new();
         public DateTime DailyTimestamp { get; private set; }
 
@@ -22,6 +23,7 @@ namespace Kityme.Entities
         public User (ulong id)
         {
             ID = id;
+            RewardMultiplier = 1.0f;
             Money = 0;
 
             DailyTimestamp = DateTime.Now.AddDays(-1);
