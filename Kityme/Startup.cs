@@ -82,16 +82,6 @@ namespace Kityme
             };
 
             Commands = Client.UseCommandsNext(commandsConfig);
-            Commands.CommandErrored += async (CommandsNextExtension commands, CommandErrorEventArgs e) =>
-            {
-                User u = await e.Context.User.GetAsync();
-                if (u == null) await e.Context.User.RegistUserAsync();
-            };
-            Commands.CommandExecuted += async (CommandsNextExtension commands, CommandExecutionEventArgs e) =>
-            {
-                User u = await e.Context.User.GetAsync();
-                if (u == null) await e.Context.User.RegistUserAsync();
-            };
 
             /// Commands.SetHelpFormatter<KitymeHelpFormatter>();
 
@@ -245,12 +235,6 @@ namespace Kityme
             }
 
             return;
-        }
-
-        private async Task CheckUser (DiscordUser user)
-        {
-            User u = await user.GetAsync();
-            if (u == null) await user.RegistUserAsync();
         }
     }
 }

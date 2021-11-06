@@ -24,11 +24,11 @@ namespace Kityme.Entities
         {
             ID = id;
             RewardMultiplier = 1.0f;
-            Money = 0;
+            Money = 1000;
 
-            DailyTimestamp = DateTime.Now.AddDays(-1);
-            ShowTimestamp = DateTime.Now.AddDays(-7);
-            YTVideoTimestamp = DateTime.Now.AddHours(-12);
+            DailyTimestamp = DateTime.Now.AddDays(-13);
+            ShowTimestamp = DateTime.Now.AddDays(-13);
+            YTVideoTimestamp = DateTime.Now.AddHours(-13);
         }
 
         public void AddMoney(double qtd)

@@ -24,7 +24,17 @@ namespace Kityme.Managers
             => await UserCollection.ReplaceOneAsync(x => x.ID == user.ID, user);
 
         public static async Task<User> GetUserAsync(ulong id)
-            => await UserCollection.Find(x => x.ID == id).FirstOrDefaultAsync();
+        {
+            User user = await UserCollection.Find(x => x.ID == id).FirstOrDefaultAsync();
+            if(user == null)
+            {
+                await CreateUserAsync(new User(id));
+                return await GetUserAsync(id);
+            } else
+            {
+                return user;
+            }
+        }
 
         public static async Task CreateUserAsync(User user)
             => await UserCollection.InsertOneAsync(user);

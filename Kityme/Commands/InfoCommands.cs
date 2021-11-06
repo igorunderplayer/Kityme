@@ -63,7 +63,15 @@ namespace Kityme.Commands
         public async Task messageinfo(CommandContext ctx, [RemainingText] DiscordMessage message = null)
         {
             message ??= ctx.Message;
-            await ctx.RespondAsync(message.Content);
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                .WithTitle("MessageInfo")
+                .WithDescription($"Author: {message.Author.Username} \n" +
+                                 $"ID: {message.Id} \n" +
+                                 $"Conteudo: {message.Content} \n\n" +
+                                 $"Canal: {message.Channel.Mention}"
+                );
+            await ctx.RespondAsync(embedBuilder);
         }
 
         [Command("lavalink"), Description("mostra informações do lavalink '-")]

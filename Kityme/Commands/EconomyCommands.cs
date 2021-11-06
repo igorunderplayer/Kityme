@@ -10,6 +10,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Kityme.Commands
 {
@@ -38,11 +39,12 @@ namespace Kityme.Commands
             User author = await ctx.User.GetAsync();
             User receiver = await user.GetAsync();
 
-            if(qtd > 1)
+            if(qtd < 1)
             {
                 await ctx.RespondAsync("n me faz perder tempo \nvc perdeu 100 dinheiros");
                 author.RemoveMoney(100);
                 await DBManager.ReplaceUserAsync(author);
+                return;
             }
 
             author.RemoveMoney(qtd);
@@ -60,7 +62,7 @@ namespace Kityme.Commands
         [Command("cats"), Description("mostra os gatos q vc ou outro usuario tem'-")]
         public async Task MyCats (CommandContext ctx, [RemainingText] DiscordUser member = null)
         {
-            User user = null;
+            User user;
             if (member == null)
                 user = await ctx.User.GetAsync();
             else
@@ -79,7 +81,6 @@ namespace Kityme.Commands
                 Description = string.IsNullOrEmpty(cats) ? "nenhum haha" : cats,
                 Color = DiscordColor.Gray
             };
-
             await ctx.RespondAsync(embedBuilder);
         }
 
@@ -87,7 +88,7 @@ namespace Kityme.Commands
         public async Task Daily (CommandContext ctx)
         {
             User user = await ctx.User.GetAsync();
-            if ((DateTime.Now - user.DailyTimestamp).Days < 1)
+            if ((DateTime.Now - user.DailyTimestamp).TotalDays < 1)
             {
                 await ctx.RespondAsync($"vsf man, querendo money d graça, e nem sequer esperou pra pedir dnv'-");
                 return;
@@ -111,6 +112,7 @@ namespace Kityme.Commands
                 totalMultiplier += 0.1f;
                 totalMultiplier += cat.atractive / 10;
             }
+            totalMultiplier = MathF.Round(totalMultiplier, 2);
             DiscordMessageBuilder builder = new DiscordMessageBuilder()
                 .WithContent($"voce tem certeza disso? isso ira resetar todos seus gatinhos e dinheiro (vc recebera {totalMultiplier} pontos de prestigio(o bombom la?))")
                 .AddComponents(
@@ -118,7 +120,6 @@ namespace Kityme.Commands
                 );
 
             DiscordMessage msg = await ctx.RespondAsync(builder);
-            var inte = ctx.Client.GetInteractivity();
             var result = await msg.WaitForButtonAsync();
 
             if (result.TimedOut)
@@ -136,7 +137,7 @@ namespace Kityme.Commands
         }
 
         [Command("buy"), Aliases("comprar"), Description("compra algo ora'-")]
-        public async Task Buy (CommandContext ctx, [RemainingText] string item = null)
+        public async Task Buy (CommandContext ctx, string item = null)
         {
             if(item == null)
             {
@@ -155,10 +156,64 @@ namespace Kityme.Commands
             Cat cat = new Cat(atr, "Cat");
             cat.name = cat.type;
 
+            int code = rand.Next(0, 1000);
+            if(code == 13)
+            {
+                cat.atractive = 10000;
+                cat.name = $"Gato {cat.type} Supremo";
+                user.Cats.Add(cat);
+                user.RemoveMoney(1500f);
+                await DBManager.ReplaceUserAsync(user);
+                
+                return;
+            }
+
             user.Cats.Add(cat);
             user.RemoveMoney(1500f);
             await DBManager.ReplaceUserAsync(user);
             await ctx.RespondAsync($"parabens, agr vc tem um Gato {cat.type} '-");
+        }
+
+        [Command("buy")]
+        public async Task Buy(CommandContext ctx,  string item = null, uint qtd = 1)
+        {
+            if (item == null)
+            {
+                await ctx.RespondAsync("insira seu pe... algo para compra'-");
+                return;
+            }
+
+            User user = await ctx.User.GetAsync();
+            if (user.Money < 1500f * qtd)
+            {
+                await ctx.RespondAsync("vc n tem dinheiros suficiente pra compra'-");
+                return;
+            }
+            int boughts = 0;
+            Random rand = new Random();
+            StringBuilder builder = new StringBuilder();
+            while (boughts < qtd)
+            {
+                int atr = rand.Next(1, 10);
+                Cat cat = new Cat(atr, "Cat");
+                cat.name = cat.type;
+
+                int code = rand.Next(0, 1000);
+                if (code == 13)
+                {
+                    cat.atractive = 10000;
+                    cat.name = $"Gato {cat.type} Supremo";
+                    builder.AppendLine($"parabens agor...... forças divinas se aproximam.. agora voce tem um {cat.name} :D");
+                }
+
+                user.Cats.Add(cat);
+                boughts++;
+            }
+            
+            user.RemoveMoney(1500f * qtd);
+            await DBManager.ReplaceUserAsync(user);
+            builder.AppendLine($"parabens, agr vc compro {qtd} '-");
+            await ctx.RespondAsync(builder.ToString());
         }
 
         [Command("catshow")]
