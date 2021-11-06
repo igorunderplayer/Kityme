@@ -6,10 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Kityme.Extensions;
 using Kityme.Managers;
-using WaxImage;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.PixelFormats;
+
 
 namespace Kityme.Commands
 {
