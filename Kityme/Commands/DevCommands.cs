@@ -78,24 +78,24 @@ namespace Kityme.Commands
         }
     
         [Command("addmoney"), RequireOwner]
-        public async Task AddMoney (CommandContext ctx, double qtd, [RemainingText] DiscordMember member = null)
+        public async Task AddMoney (CommandContext ctx, double qtd, [RemainingText] DiscordUser user = null)
         {
-            if (member == null)
-                member = ctx.Member;
+            if (user == null)
+                user = ctx.User;
 
-            User u = await member.GetAsync();
+            User u = await user.GetAsync();
             u.AddMoney(qtd);
             await DBManager.ReplaceUserAsync(u);
             await ctx.RespondAsync($"doei {qtd} kitycois para vc");
         }
 
         [Command("removemoney"), RequireOwner]
-        public async Task RemoveMoney(CommandContext ctx, double qtd, [RemainingText] DiscordMember member = null)
+        public async Task RemoveMoney(CommandContext ctx, double qtd, [RemainingText] DiscordUser user = null)
         {
-            if (member == null)
-                member = ctx.Member;
+            if (user == null)
+                user = ctx.User;
 
-            User u = await member.GetAsync();
+            User u = await user.GetAsync();
             u.RemoveMoney(qtd);
             await DBManager.ReplaceUserAsync(u);
             await ctx.RespondAsync($"removi {qtd} kitycois para vc");
