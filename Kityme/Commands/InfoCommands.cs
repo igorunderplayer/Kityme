@@ -36,11 +36,11 @@ namespace Kityme.Commands
                 HttpResponseMessage response = await client.GetAsync("/floof");
                 if (response.IsSuccessStatusCode)
                 {
-                    var fox = await response.Content.ReadAsStringAsync();
+                    string fox = await response.Content.ReadAsStringAsync();
                     Fox data = JsonConvert.DeserializeObject<Fox>(fox);
 
                     DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
-                        .WithTitle("raposious")
+                        .WithTitle("raposius")
                         .WithColor(DiscordColor.Orange)
                         .WithImageUrl(data.Image);
 

@@ -70,8 +70,6 @@ namespace Kityme
                 if (e.Message.Content.StartsWith($"<@{client.CurrentUser.Id}>") ||
                     e.Message.Content.StartsWith($"<!@{client.CurrentUser.Id}>"))
                     await e.Message.RespondAsync("'- se quise ve meus comando usa k!help 👍");
-
-                await CheckUser(e.Author).ConfigureAwait(false);
                 
                 return;
             };
@@ -84,6 +82,11 @@ namespace Kityme
             };
 
             Commands = Client.UseCommandsNext(commandsConfig);
+            Commands.CommandErrored += async (CommandsNextExtension commands, CommandErrorEventArgs e) =>
+            {
+                User u = await e.Context.User.GetAsync();
+                if (u == null) await e.Context.User.RegistUserAsync();
+            };
             Commands.CommandExecuted += async (CommandsNextExtension commands, CommandExecutionEventArgs e) =>
             {
                 User u = await e.Context.User.GetAsync();
@@ -209,7 +212,6 @@ namespace Kityme
                 case "m_loop":
                     manager._loopEnabled = !manager._loopEnabled;
                     string loop_pmsg = manager._loopEnabled ? "ativado" : "desativado";
-                    //await e.Channel.SendMessageAsync($"loop {loop_pmsg} *(pedido por {e.User.Username})*");
                     await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"loop {loop_pmsg} *(pedido por {e.User.Username})*"));
                     break;
 
