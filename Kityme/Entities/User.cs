@@ -24,7 +24,7 @@ namespace Kityme.Entities
         {
             ID = id;
             RewardMultiplier = 1.0f;
-            Money = 1000;
+            Money = 0;
 
             DailyTimestamp = DateTime.Now.AddDays(-13);
             ShowTimestamp = DateTime.Now.AddDays(-13);
