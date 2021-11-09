@@ -130,7 +130,7 @@ namespace Kityme.Commands
             foreach(Cat cat in user.Cats)
             {
                 totalMultiplier += 0.1f;
-                totalMultiplier += cat.atractive / 10;
+                totalMultiplier += (float)cat.atractive / 10;
             }
             totalMultiplier = MathF.Round(totalMultiplier, 2);
             DiscordMessageBuilder builder = new DiscordMessageBuilder()
