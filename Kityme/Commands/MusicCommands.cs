@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Kityme.Managers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using DSharpPlus.Interactivity.Enums;
 
 namespace Kityme.Commands
 {
@@ -451,7 +452,7 @@ namespace Kityme.Commands
                 }
 
                 var interactivity = ctx.Client.GetInteractivity();
-                var pages = interactivity.GeneratePagesInEmbed(q);
+                var pages = interactivity.GeneratePagesInEmbed(q, SplitType.Line);
 
                 await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
             } else

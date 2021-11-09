@@ -11,6 +11,7 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus;
 using System.Collections.Generic;
 using System.Text;
+using DSharpPlus.Interactivity.Enums;
 
 namespace Kityme.Commands
 {
@@ -78,10 +79,14 @@ namespace Kityme.Commands
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
             {
                 Title = "gatinhos'-",
-                Description = string.IsNullOrEmpty(cats) ? "nenhum haha" : cats,
+                Description = string.IsNullOrEmpty(cats) ? "nenhum haha" : "",
                 Color = DiscordColor.Gray
             };
-            await ctx.RespondAsync(embedBuilder);
+
+            var interactivity = ctx.Client.GetInteractivity();
+            var pages = interactivity.GeneratePagesInEmbed(cats, SplitType.Line, embedBuilder);
+
+            await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
         }
 
         [Command("daily"), Description("te da dinheiro de graca a cada 1 dia'-")]
