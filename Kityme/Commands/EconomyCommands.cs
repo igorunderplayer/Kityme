@@ -79,12 +79,11 @@ namespace Kityme.Commands
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
             {
                 Title = "gatinhos'-",
-                Description = string.IsNullOrEmpty(cats) ? "nenhum haha" : "",
                 Color = DiscordColor.Gray
             };
 
             var interactivity = ctx.Client.GetInteractivity();
-            var pages = interactivity.GeneratePagesInEmbed(cats, SplitType.Line, embedBuilder);
+            var pages = interactivity.GeneratePagesInEmbed(string.IsNullOrEmpty(cats) ? "nenhum haha" : cats, SplitType.Line, embedBuilder);
 
             await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
         }
