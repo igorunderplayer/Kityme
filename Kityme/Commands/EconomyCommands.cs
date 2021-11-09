@@ -26,6 +26,20 @@ namespace Kityme.Commands
             await ctx.RespondAsync($"{mine} tem {u.Money} kitycoins, ta ricass neh meu");
         }
 
+        [Command("profile"), Description("mostra algumas infos sobre um tal user")]
+        public async Task Profile (CommandContext ctx, [RemainingText] DiscordUser user = null)
+        {
+            user ??= ctx.User;
+            User dbUser = await user.GetAsync();
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                .WithAuthor(user.Username, iconUrl: user.AvatarUrl)
+                .WithTitle($"Profile de {user.Username}#{user.Discriminator}")
+                .WithDescription($"pontos de prestigio: {dbUser.RewardMultiplier}")
+                .WithColor(DiscordColor.PhthaloBlue);
+
+            await ctx.RespondAsync(embedBuilder);
+        }
 
         [Command("pay"), Aliases("pagar"), Description("paga alguem")]
         public async Task Pay (CommandContext ctx, double qtd, [RemainingText] DiscordMember user)
@@ -39,6 +53,7 @@ namespace Kityme.Commands
 
             User author = await ctx.User.GetAsync();
             User receiver = await user.GetAsync();
+            qtd = Math.Round(qtd, 2);
 
             if(qtd < 1)
             {
@@ -99,6 +114,7 @@ namespace Kityme.Commands
             } else
             {
                 double money = new Random().Next(0, 250) * user.RewardMultiplier;
+                money = Math.Round(money, 2);
                 user.AddMoney(money);
                 user.UpdateDailyTimestamp(DateTime.Now);
                 await DBManager.ReplaceUserAsync(user);
@@ -227,7 +243,7 @@ namespace Kityme.Commands
 
             if((DateTime.Now - user.ShowTimestamp).TotalDays < 7)
             {
-                await ctx.RespondAsync("vc n pode faze um show agr, espera mais ae'-");
+                await ctx.RespondAsync("vc so pode fzr um show a cada 7 dias");
                 return;
             } else
             {
