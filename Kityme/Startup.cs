@@ -183,33 +183,31 @@ namespace Kityme
             if (!MusicManagers._managers.ContainsKey(e.Guild.Id))
                 return;
 
-            await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-
             GuildMusicManager manager = MusicManagers._managers[e.Guild.Id];
             if (!manager.CanChangeQueue(e.Guild.Members.GetValueOrDefault(e.User.Id))) return;
             switch (e.Id)
             {
                 case "m_skip":
-                    await MusicManagers._managers[e.Guild.Id].Skip(-1);
-                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"pulado! *(pedido por {e.User.Username})*"));
+                    await MusicManagers._managers[e.Guild.Id].Skip(-1);//await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new())
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"pulado! *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_skip_previous":
                     await MusicManagers._managers[e.Guild.Id].Skip(MusicManagers._managers[e.Guild.Id].ActualIndex - 1);
-                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"pulado (soq para anterior)! *(pedido por {e.User.Username})*"));
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"pulado soq pra tras! *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_loop":
                     manager._loopEnabled = !manager._loopEnabled;
                     string loop_pmsg = manager._loopEnabled ? "ativado" : "desativado";
-                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"loop {loop_pmsg} *(pedido por {e.User.Username})*"));
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"loop {loop_pmsg} *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_shuffle":
                     manager._shuffleEnabled = !manager._shuffleEnabled;
                     string shuffle_msg = manager._shuffleEnabled ? "ativado" : "desativado";
                     //await e.Channel.SendMessageAsync($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*");
-                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*"));
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"embaralhamento {shuffle_msg} *(pedido por {e.User.Username})*"));
                     break;
 
                 case "m_stop":
@@ -217,7 +215,7 @@ namespace Kityme
                     await manager.Connection.DisconnectAsync();
                     manager.RemoveThis(e.Guild.Id);
                     //await e.Channel.SendMessageAsync($"sai do canal! *(pedido por {e.User.Username})*");
-                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"sai do canal! *(pedido por {e.User.Username})*"));
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"sai do canal! * (pedido por { e.User.Username})*"));
                     break;
 
                 case "sm_select":
@@ -230,7 +228,7 @@ namespace Kityme
                         manager._queue.Add(track);
                         stringBuilder.Append($" {track.Title} |");
                     }
-                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"{stringBuilder} adicionado na fila *(pedido por {e.User.Username})*"));
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"{stringBuilder} adicionado na fila *(pedido por {e.User.Username})*"));
                     break;
             }
 

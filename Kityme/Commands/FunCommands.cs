@@ -1,10 +1,13 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Extensions;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kityme.Commands
@@ -58,6 +61,116 @@ namespace Kityme.Commands
             };
 
             await ctx.RespondAsync(embed);
+        }
+
+        [Command("rps")]
+        public async Task RPS (CommandContext ctx, [RemainingText] DiscordMember member = null)
+        {
+            member ??= ctx.Guild.CurrentMember;
+
+            if (member.Id == ctx.Member.Id)
+            {
+                await ctx.RespondAsync("ue");
+                return;
+            }
+
+            DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
+                .WithContent("aperta ae")
+                .AddComponents(new[]{
+                 new DiscordButtonComponent(ButtonStyle.Primary, "rps_0", "", false, new("👊")),
+                 new DiscordButtonComponent(ButtonStyle.Primary, "rps_1", "", false, new("🖐️")),
+                 new DiscordButtonComponent(ButtonStyle.Primary, "rps_2", "", false, new("✌️"))
+            });
+
+            await ctx.RespondAsync(messageBuilder);
+
+            string player1Choice = null;
+            string player2Choice = null;
+
+            if(member.Id == ctx.Client.CurrentUser.Id)
+            {
+                player2Choice = new Random().Next(0, 3).ToString();
+                Console.WriteLine($"-=-=-=-=-= Escolhido pelo BOT: {player2Choice}");
+            }
+
+            ctx.Client.ComponentInteractionCreated += OnInteract;
+
+            async Task EndGame()
+            {
+                ctx.Client.ComponentInteractionCreated -= OnInteract;
+                if (player1Choice == player2Choice)
+                {
+                    await ctx.RespondAsync("Empate!");
+                    return;
+                }
+
+                switch(player1Choice)
+                {
+                    case "0":
+                        if(player2Choice == "1")
+                        {
+                            await ctx.RespondAsync($"{member.Mention} ganhou!");
+                        } else if(player2Choice == "2")
+                        {
+                            await ctx.RespondAsync($"{ctx.Member.Mention} ganhou!");
+                        }
+                        break;
+
+                    case "1":
+                        if (player2Choice == "0")
+                        {
+                            await ctx.RespondAsync($"{ctx.Member.Mention} ganhou!");
+                        }
+                        else if (player2Choice == "2")
+                        {
+                            await ctx.RespondAsync($"{member.Mention} ganhou!");
+                        }
+                        break;
+
+                    case "2":
+                        if (player2Choice == "1")
+                        {
+                            await ctx.RespondAsync($"{ctx.Member.Mention} ganhou!");
+                        }
+                        else if (player2Choice == "0")
+                        {
+                            await ctx.RespondAsync($"{member.Mention} ganhou!");
+                        }
+                        break;
+                }
+            }
+
+            async Task OnInteract (DiscordClient sender, ComponentInteractionCreateEventArgs e)
+            {
+                if (e.Interaction.Data.CustomId.StartsWith("rps_"))
+                {
+                    if(e.User.Id == ctx.User.Id)
+                    {
+                        if(player1Choice == null)
+                        {
+                            player1Choice = e.Interaction.Data.CustomId.Replace("rps_", "");
+                            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder { Content = "Escolhido!", IsEphemeral = true });
+                        }
+                    }
+
+                    if (e.User.Id == member.Id)
+                    {
+                        if (player2Choice == null)
+                        {
+                            player2Choice = e.Interaction.Data.CustomId.Replace("rps_", "");
+                            await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder { Content = "Escolhido!", IsEphemeral = true });
+                        }
+                    }
+
+                    if (player1Choice != null && player2Choice != null)
+                        await EndGame();
+                }
+                else return;
+            }
+
+            Thread.Sleep(30000);
+            ctx.Client.ComponentInteractionCreated -= OnInteract;
+
         }
 
         [Command("destino")]
@@ -178,8 +291,10 @@ namespace Kityme.Commands
         [Command("changemymind")]
         public async Task ChangeMyMind (CommandContext ctx, params string[] args)
         {
-
+           
             string text = string.Join("+", args);
+            if (text.Length < 1)
+                text = $"o+{ctx.User.Username}+deveria+me+dar+uma+mamada";
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                 .WithColor(DiscordColor.White)
