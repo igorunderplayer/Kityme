@@ -177,6 +177,7 @@ namespace Kityme.Commands.SlashCommands
         DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
         {
           Title = "Now Playing",
+          Color = new DiscordColor("#4800ff"),
           Description = $"Atualmente estou tocando `{npTrack.Title}` no canal **{manager.Connection.Channel.Mention}** \n" +
                 $"Duração: {npTrack.Length.ToString("h'h 'm'm 's's'")} \n" +
                 $"`{manager.Connection.CurrentState.PlaybackPosition.ToString(@"hh\:mm\:ss")}` / `{npTrack.Length.ToString(@"hh\:mm\:ss")}`"
