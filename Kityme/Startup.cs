@@ -74,7 +74,7 @@ namespace Kityme
 
       CommandsNextConfiguration commandsConfig = new()
       {
-        StringPrefixes = new string[] { "ku!", "kityme" },
+        StringPrefixes = new string[] { "k!", "kityme" },
         EnableMentionPrefix = true,
         EnableDms = false
       };
