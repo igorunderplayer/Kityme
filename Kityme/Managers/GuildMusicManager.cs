@@ -202,6 +202,7 @@ namespace Kityme.Managers
 
         public bool CanChangeQueue(DiscordMember u)
         {
+            if (this.Connection.Channel != u.VoiceState?.Channel) return false;
             if (_queue[ActualIndex].GetRequester().Id == u.Id) return true;
             if (u.Permissions.HasPermission(Permissions.ManageMessages)) return true;
 
