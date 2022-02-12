@@ -202,6 +202,7 @@ namespace Kityme.Managers
 
         public bool CanChangeQueue(DiscordMember u)
         {
+            if (u == null) return false;
             if (this.Connection.Channel != u.VoiceState?.Channel) return false;
             if (_queue[ActualIndex].GetRequester().Id == u.Id) return true;
             if (u.Permissions.HasPermission(Permissions.ManageMessages)) return true;
@@ -209,7 +210,6 @@ namespace Kityme.Managers
             DiscordRole djRole = u.Guild.Roles.FirstOrDefault(r => r.Value.Name == "DJ").Value;
             if (djRole == null) return false;
             if (u.Roles.Contains(djRole)) return true;
-
 
             return false;
         }
@@ -283,6 +283,7 @@ namespace Kityme.Managers
                     {
                         await sender.PlayAsync(_queue[0]);
                         await SendPlayMessage(_queue[0]);
+                        ActualIndex = 0;
                         return;
                     }
                     await LastMessage.DeleteAsync();

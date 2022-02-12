@@ -237,7 +237,9 @@ namespace Kityme.Commands
         DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
         {
           Title = "Now Playing",
-          Description = $"Atualmente estou tocando `{npTrack.Title}` no canal **{manager.Connection.Channel.Mention}**"
+          Description = $"Atualmente estou tocando `{npTrack.Title}` no canal **{manager.Connection.Channel.Mention}** \n" +
+                        $"Duração: {npTrack.Length.ToString("h'h 'm'm 's's'")} \n" +
+                        $"`{manager.Connection.CurrentState.PlaybackPosition.ToString(@"hh\:mm\:ss")}` / `{npTrack.Length.ToString(@"hh\:mm\:ss")}`"
         };
 
         await ctx.RespondAsync(embedBuilder);
@@ -444,6 +446,7 @@ namespace Kityme.Commands
     [Command("filter")]
     public async Task Filter(CommandContext ctx, [RemainingText] string filter)
     {
+      return;
       await ctx.RespondAsync("so avisando q esse cmd n ta pronto'-");
       if (!MusicManagers._managers[ctx.Guild.Id].CanChangeQueue(ctx.Member))
       {
@@ -467,8 +470,14 @@ namespace Kityme.Commands
       }
       if (MusicManagers._managers.ContainsKey(ctx.Guild.Id))
       {
+        TimeSpan totalQueueDuration = TimeSpan.Zero;
+
+
         string q = string.Empty;
         GuildMusicManager manager = MusicManagers._managers[ctx.Guild.Id];
+        foreach(var track in manager._queue) {
+          totalQueueDuration += track.Length;
+        }
         for (int i = 0; i < manager._queue.Count; i++)
         {
           q += $"{i + 1} - {manager._queue[i].Title}\n";

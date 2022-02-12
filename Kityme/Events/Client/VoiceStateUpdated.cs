@@ -17,7 +17,7 @@ namespace Kityme.Events.Client
         {
             if(e.Before?.User.Id == client.CurrentUser.Id)
             {
-                MusicManagers.UpdatePack(client, e.After);
+                MusicManagers.UpdatePack(client, e.Before, e.After);
             }
             return Task.CompletedTask;
         }

@@ -9,24 +9,33 @@ namespace Kityme.Managers
     {
         public static Dictionary<ulong, GuildMusicManager> _managers = new();
 
-        public static async Task UpdatePack (DiscordClient client, DiscordVoiceState voiceState)
+        public static async Task UpdatePack (DiscordClient client, DiscordVoiceState oldState, DiscordVoiceState newState)
         {
 
-            if(_managers.ContainsKey(voiceState.Guild.Id))
+            if(_managers.ContainsKey(newState.Guild.Id))
             {
-                GuildMusicManager manager = _managers[voiceState.Guild.Id];
-                if (voiceState == null || voiceState.Channel == null)
+                GuildMusicManager manager = _managers[newState.Guild.Id];
+                if (newState == null || newState.Channel == null)
                 {
                     await manager.Connection.DisconnectAsync();
                     _managers.Remove(manager.Connection.Guild.Id);
+                    return;
+                }
 
-                } else if (voiceState.Channel.Id != manager.Connection?.Channel?.Id)
+                if (newState.Channel != oldState.Channel)
                 {
-                    if(manager.Connection != null)
-                        await manager.Connection.DisconnectAsync();
-                    manager.Connection = await manager.Connection?.Node.ConnectAsync(voiceState.Channel);
+                    await manager.Connection.DisconnectAsync();
+                    manager.Connection = await manager.Node.ConnectAsync(newState.Channel);
                     await manager.Connection.PlayAsync(manager._queue[manager.ActualIndex]);
                 }
+
+                // } else if (newState.Channel.Id != manager.Connection?.Channel?.Id)
+                // {
+                //     if(manager.Connection != null)
+                //         await manager.Connection.DisconnectAsync();
+                //     manager.Connection = await manager.Connection?.Node.ConnectAsync(newState.Channel);
+                //     await manager.Connection.PlayAsync(manager._queue[manager.ActualIndex]);
+                // }
             }
             return;
         }
