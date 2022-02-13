@@ -217,6 +217,7 @@ namespace Kityme.Commands
       {
         MusicManagers._managers.Add(ctx.Guild.Id, new GuildMusicManager(ctx.Client, ctx.Guild, channel, (id) => MusicManagers._managers.Remove(id)));
       }
+
       PlayResponse res = await MusicManagers._managers[ctx.Guild.Id].Play(ctx.Channel, ctx.Member, search);
       if (res.Type == PlayResponseType.SingleTrackLoad)
         await ctx.RespondAsync($"{res.Track.Title} adicionada a fila '-");
@@ -236,12 +237,14 @@ namespace Kityme.Commands
 
         DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
         {
-          Title = "Now Playing",
           Color = new DiscordColor("#4800ff"),
           Description = $"Atualmente estou tocando `{npTrack.Title}` no canal **{manager.Connection.Channel.Mention}** \n" +
                         $"Duração: {npTrack.Length.ToString("h'h 'm'm 's's'")} \n" +
                         $"`{manager.Connection.CurrentState.PlaybackPosition.ToString(@"hh\:mm\:ss")}` / `{npTrack.Length.ToString(@"hh\:mm\:ss")}`"
         };
+
+        embedBuilder
+          .WithAuthor("Now playing", iconUrl: ctx.Member.GetAvatarUrl(ImageFormat.Png, 512));
 
         await ctx.RespondAsync(embedBuilder);
 
@@ -484,8 +487,13 @@ namespace Kityme.Commands
           q += $"{i + 1} - {manager._queue[i].Title}\n";
         }
 
+        var embedBase = new DiscordEmbedBuilder()
+          .WithAuthor($"Lista de reprodução de {ctx.Guild.Name}", iconUrl: ctx.Guild.IconUrl)
+          .WithColor(DiscordColor.Aquamarine)
+          .WithFooter($"Duraçao total: {totalQueueDuration.ToString("h'h 'm'm 's's'")}");
+
         var interactivity = ctx.Client.GetInteractivity();
-        var pages = interactivity.GeneratePagesInEmbed(q, SplitType.Line);
+        var pages = interactivity.GeneratePagesInEmbed(q, SplitType.Line, embedBase);
 
         await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
       }

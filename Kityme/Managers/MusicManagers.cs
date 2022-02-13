@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -24,9 +25,18 @@ namespace Kityme.Managers
 
                 if (newState.Channel != oldState.Channel)
                 {
-                    await manager.Connection.DisconnectAsync();
-                    manager.Connection = await manager.Node.ConnectAsync(newState.Channel);
-                    await manager.Connection.PlayAsync(manager._queue[manager.ActualIndex]);
+                    var newManager = new GuildMusicManager(manager.Client, newState.Guild, newState.Channel, (id) => _managers.Remove(id));
+                    newManager.ActualIndex = manager.ActualIndex;
+                    newManager.LastMessage = manager.LastMessage;
+                    newManager._queue = manager._queue;
+                    newManager._loopEnabled = manager._loopEnabled;
+                    newManager._shuffleEnabled = manager._shuffleEnabled;
+
+                    await newManager.Connection.PlayPartialAsync(newManager._queue[newManager.ActualIndex], manager.Connection.CurrentState.PlaybackPosition, newManager._queue[newManager.ActualIndex].Length);
+                    manager.Connection.PlaybackFinished -= manager.Connection_PlaybackFinished;
+
+                    _managers.Remove(oldState.Guild.Id);
+                    _managers.Add(newManager.Connection.Guild.Id, newManager);
                 }
 
                 // } else if (newState.Channel.Id != manager.Connection?.Channel?.Id)

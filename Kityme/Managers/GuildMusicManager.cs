@@ -23,8 +23,8 @@ namespace Kityme.Managers
         public List<Filter> _filters = new List<Filter>();
         public bool _loopEnabled = false;
         public bool _shuffleEnabled = false;
-        public DiscordMessage LastMessage { get; private set; }
-        public int ActualIndex { get; private set; }
+        public DiscordMessage LastMessage { get; set; }
+        public int ActualIndex { get; set; }
 
         public GuildMusicManager(DiscordClient client, DiscordGuild guild, DiscordChannel channel, Func<ulong, bool> rmThis)
         {
@@ -272,7 +272,7 @@ namespace Kityme.Managers
             await Connection.Node.SendAsync(message);
             return true;
         }
-        private async Task Connection_PlaybackFinished(LavalinkGuildConnection sender, TrackFinishEventArgs e)
+        public async Task Connection_PlaybackFinished(LavalinkGuildConnection sender, TrackFinishEventArgs e)
         {
             if(e.Reason == TrackEndReason.Finished)
             {

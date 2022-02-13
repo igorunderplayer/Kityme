@@ -121,14 +121,15 @@ namespace Kityme
                     RestEndpoint = endpoint[0],
                     SocketEndpoint = endpoint[0],
                     SocketAutoReconnect = true
-                },
-                new LavalinkConfiguration()
-                {
-                    Password = botConfig.LavalinkPassword,
-                    RestEndpoint = endpoint[1],
-                    SocketEndpoint = endpoint[1],
-                    SocketAutoReconnect = true
                 }
+                // },
+                // new LavalinkConfiguration()
+                // {
+                //     Password = botConfig.LavalinkPassword,
+                //     RestEndpoint = endpoint[1],
+                //     SocketEndpoint = endpoint[1],
+                //     SocketAutoReconnect = true
+                // }
             };
 
 
