@@ -34,6 +34,7 @@ namespace Kityme.Minigames
       this.Size = size;
 
       this.Tiles = new Tile[size, size];
+      this.OriginalTilesId = new string[size,size];
     }
 
     public async Task Start()
