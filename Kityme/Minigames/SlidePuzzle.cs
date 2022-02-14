@@ -61,11 +61,12 @@ namespace Kityme.Minigames
                .Crop(rectangle)
           );
           this.Tiles[i, j] = new Tile(img, $"{i},{j}");
-          this.OriginalTilesId[i, j] = $"{i},{j}";
+          this.OriginalTilesId[i, j] = Tiles[i, j].id;
         }
       }
 
       Tiles[Tiles.GetLength(0) - 1, Tiles.GetLength(1) - 1] = null;
+      OriginalTilesId[OriginalTilesId.GetLength(0) - 1, OriginalTilesId.GetLength(1) - 1] = null;
       Random rand = new Random();
       Shuffle(rand, this.Tiles);
     }
