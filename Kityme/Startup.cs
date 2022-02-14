@@ -121,15 +121,14 @@ namespace Kityme
                     RestEndpoint = endpoint[0],
                     SocketEndpoint = endpoint[0],
                     SocketAutoReconnect = true
+                },
+                new LavalinkConfiguration()
+                {
+                    Password = botConfig.LavalinkPassword,
+                    RestEndpoint = endpoint[1],
+                    SocketEndpoint = endpoint[1],
+                    SocketAutoReconnect = true
                 }
-                // },
-                // new LavalinkConfiguration()
-                // {
-                //     Password = botConfig.LavalinkPassword,
-                //     RestEndpoint = endpoint[1],
-                //     SocketEndpoint = endpoint[1],
-                //     SocketAutoReconnect = true
-                // }
             };
 
 
@@ -179,8 +178,16 @@ namespace Kityme
     private async Task Client_ComponentInteractionCreated(DiscordClient sender,
         ComponentInteractionCreateEventArgs e)
     {
+
+      if(e.Id.StartsWith("slidePuzzle_")) {
+        if(Managers.Minigames.SlidePuzzle.ContainsKey(e.Interaction.User.Id)) {
+          var game = Managers.Minigames.SlidePuzzle[e.Interaction.User.Id];
+          await game.HandleInteraction(e.Interaction);
+        }
+      }
+
       if (!MusicManagers._managers.ContainsKey(e.Guild.Id))
-        return;
+        return;      
 
       GuildMusicManager manager = MusicManagers._managers[e.Guild.Id];
       if (!manager.CanChangeQueue(e.Guild.Members.GetValueOrDefault(e.User.Id))) return;
