@@ -21,7 +21,7 @@ namespace Kityme.Commands
       var game = Minigames.SlidePuzzle.Create(ctx.Client, ctx.Member, ctx.Channel, size);
 
       if(game == null) {
-        await ctx.RespondAsync("tomanocukkkk");
+        await ctx.RespondAsync("n foi possivel criar seu jogo, se vc ja estiver dentro de um jogo, utilize k!slidepuzzle cancel para cancela-lo");
         return;
       }
       await game.Start();
