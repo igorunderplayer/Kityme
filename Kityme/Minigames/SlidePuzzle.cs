@@ -24,7 +24,7 @@ namespace Kityme.Minigames
     public DiscordMessage LastMessage { get; private set; }
 
     public Tile[,] Tiles { get; private set; }
-    public Tile[,] OriginalTiles { get; private set; }
+    public string[,] OriginalTilesId { get; private set; }
 
     public SlidePuzzle(DiscordClient client, DiscordMember playerMember, DiscordChannel channel, int size = 2)
     {
@@ -60,11 +60,11 @@ namespace Kityme.Minigames
                .Crop(rectangle)
           );
           this.Tiles[i, j] = new Tile(img, $"{i},{j}");
+          this.OriginalTilesId[i, j] = $"{i},{j}";
         }
       }
 
       Tiles[Tiles.GetLength(0) - 1, Tiles.GetLength(1) - 1] = null;
-      OriginalTiles = Tiles.Clone() as Tile[,];
       Random rand = new Random();
       Shuffle(rand, this.Tiles);
     }
@@ -75,7 +75,7 @@ namespace Kityme.Minigames
       {
         for (int j = 0; j < Tiles.GetLength(1); j++)
         {
-          if (Tiles[i, j]?.id != OriginalTiles[i, j]?.id) return false;
+          if (Tiles[i, j]?.id != OriginalTilesId[i, j]) return false;
         }
       }
 
@@ -119,7 +119,7 @@ namespace Kityme.Minigames
             for (int c = 0; c < Tiles.GetLength(1); c++)
             {
                 FindBlank(out int x, out int y);
-                components[c] = new DiscordButtonComponent(i == x && c == y ? ButtonStyle.Danger : ButtonStyle.Secondary, $"slidePuzzle_{c},{i}", $"{c}-{i}");
+                components[c] = new DiscordButtonComponent(ButtonStyle.Secondary, $"slidePuzzle_{c},{i}", $"{c}-{i}");
             }
             builder.AddComponents(components);
         }
