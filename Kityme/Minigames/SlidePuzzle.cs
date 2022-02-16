@@ -100,13 +100,13 @@ namespace Kityme.Minigames
         MemoryStream ms = new MemoryStream();
         for (int i = 0; i < Tiles.GetLength(0); i++)
         {
-        for (int j = 0; j < Tiles.GetLength(1); j++)
-        {
-            var tile = this.Tiles[i, j];
-            Point point = new Point(i * (OriginalImage.Height / Size), j * (OriginalImage.Width / Size));
-            if (tile?.image != null)
-            image.Mutate(x => x.DrawImage(tile.image, point, 1));
-        }
+            for (int j = 0; j < Tiles.GetLength(1); j++)
+            {
+                var tile = this.Tiles[i, j];
+                Point point = new Point(i * (OriginalImage.Height / Size), j * (OriginalImage.Width / Size));
+                if (tile?.image != null)
+                image.Mutate(x => x.DrawImage(tile.image, point, 1));
+            }
         }
 
         image.Save(ms, new PngEncoder());
