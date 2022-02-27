@@ -97,39 +97,51 @@ namespace Kityme
       SlashCommands.RegisterCommands<TestingSlashCommands>(720709045119352862); // Guild para testes de slash commands
 
 
-      ConnectionEndpoint[] endpoint = new[]
+      var endpoint = new ConnectionEndpoint()
       {
-                new ConnectionEndpoint()
-                {
-                    Hostname = botConfig.LavalinkHost,
-                    Port = 80,
-                    Secured = false
-                },
-                new ConnectionEndpoint()
-                {
-                    Hostname = botConfig.SLavalinkHost,
-                    Port = 80,
-                    Secured = false
-                }
-            };
+          Hostname = "127.0.0.1",
+          Port = 5478
+      };
 
-      LavalinkConfiguration[] lavalinkConfig = new[]
+      var lavalinkConfig = new LavalinkConfiguration()
       {
-                new LavalinkConfiguration()
-                {
-                    Password = botConfig.LavalinkPassword,
-                    RestEndpoint = endpoint[0],
-                    SocketEndpoint = endpoint[0],
-                    SocketAutoReconnect = true
-                },
-                new LavalinkConfiguration()
-                {
-                    Password = botConfig.LavalinkPassword,
-                    RestEndpoint = endpoint[1],
-                    SocketEndpoint = endpoint[1],
-                    SocketAutoReconnect = true
-                }
-            };
+          Password = "123",
+          RestEndpoint = endpoint,
+          SocketEndpoint = endpoint
+      };
+      // ConnectionEndpoint[] endpoint = new[]
+      // {
+      //           new ConnectionEndpoint()
+      //           {
+      //               Hostname = botConfig.LavalinkHost,
+      //               Port = 80,
+      //               Secured = false
+      //           },
+      //           new ConnectionEndpoint()
+      //           {
+      //               Hostname = botConfig.SLavalinkHost,
+      //               Port = 80,
+      //               Secured = false
+      //           }
+      //       };
+
+      // LavalinkConfiguration[] lavalinkConfig = new[]
+      // {
+      //           new LavalinkConfiguration()
+      //           {
+      //               Password = botConfig.LavalinkPassword,
+      //               RestEndpoint = endpoint[0],
+      //               SocketEndpoint = endpoint[0],
+      //               SocketAutoReconnect = true
+      //           }
+      //           // new LavalinkConfiguration()
+      //           // {
+      //           //     Password = botConfig.LavalinkPassword,
+      //           //     RestEndpoint = endpoint[1],
+      //           //     SocketEndpoint = endpoint[1],
+      //           //     SocketAutoReconnect = true
+      //           // }
+      //       };
 
 
       Lavalink = Client.UseLavalink();
@@ -141,17 +153,19 @@ namespace Kityme
       DBManager.Connect(botConfig.MongoUrl);
 
       await Client.ConnectAsync();
-      foreach (LavalinkConfiguration lavalinkConfiguration in lavalinkConfig)
-      {
-        try
-        {
-          await Lavalink.ConnectAsync(lavalinkConfiguration);
-        }
-        catch (Exception)
-        {
-          Console.WriteLine("Não foi possivel conectar ao lavalink");
-        }
-      }
+      // foreach (LavalinkConfiguration lavalinkConfiguration in lavalinkConfig)
+      // {
+      //   try
+      //   {
+      //     await Lavalink.ConnectAsync(lavalinkConfiguration);
+      //   }
+      //   catch (Exception)
+      //   {
+      //     Console.WriteLine("Não foi possivel conectar ao lavalink");
+      //   }
+      // }
+
+      await Lavalink.ConnectAsync(lavalinkConfig);
 
       Lavalink.NodeDisconnected += Lavalink_NodeDisconnected;
 

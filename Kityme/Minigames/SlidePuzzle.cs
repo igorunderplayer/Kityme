@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -113,18 +114,32 @@ namespace Kityme.Minigames
         ms.Position = 0;
 
         DiscordMessageBuilder builder = new DiscordMessageBuilder()
+            .WithContent("use os botoes para tentar arrumar a imagem")
             .WithFile("image.png", ms);
+
+        List<DiscordComponent[]> comps = new List<DiscordComponent[]>();
+
+        
 
         for (int i = 0; i < Tiles.GetLength(0); i++)
         {
+            comps.Add(new DiscordComponent[Size]);
             DiscordComponent[] components = new DiscordComponent[Size];
             for (int c = 0; c < Tiles.GetLength(1); c++)
             {
                 FindBlank(out int x, out int y);
-                components[c] = new DiscordButtonComponent(ButtonStyle.Secondary, $"slidePuzzle_{c},{i}", $"{c}-{i}");
+                bool neighbor = IsNeighbor(c, i, x, y);
+                comps[i][c] = new DiscordButtonComponent(ButtonStyle.Secondary, $"slidePuzzle_{i},{c}", $"{i}-{c}", !neighbor);
+                // components[c] = new DiscordButtonComponent(ButtonStyle.Secondary, $"slidePuzzle_{c},{i}", $"{c}-{i}", !neighbor);
             }
-            builder.AddComponents(components);
+            // builder.AddComponents(components);
         }
+
+        foreach(var c in comps) {
+          builder.AddComponents(c);
+        }
+
+        
 
         if (LastMessage != null)
         {
@@ -188,10 +203,12 @@ namespace Kityme.Minigames
 
     public bool IsNeighbor(int x1, int y1, int x2, int y2)
     {
-      if (Math.Abs(x1 - x2) == 1 || Math.Abs(y1 - y2) == 1)
-      {
-        return true;
-      }
+      if(Math.Abs(x1 - x2) != 1 && Math.Abs(y1 - y2) != 0) return false;
+      if (Math.Abs((x1 - x2) + (y1 - y2)) == 1) return true;
+      // if (Math.Abs(x1 - x2) == 1 || Math.Abs(y1 - y2) == 1)
+      // {
+      //   return true;
+      // }
       return false;
     }
 

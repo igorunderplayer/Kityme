@@ -26,6 +26,20 @@ namespace Kityme.Commands
             await ctx.RespondAsync(embed);
         }
 
+        [Command("matriz")]
+        public async Task Matriz (CommandContext ctx, int sizeX, int sizeY) {
+            string visual = "";
+            for(int i = 0; i < sizeX; i++) {
+                for(int j = 0; j < sizeY; j++) {
+                    visual += $"{i}, {j} ";
+                }
+
+                visual += "\n";
+            }
+
+            await ctx.RespondAsync(visual);
+        }
+
 
         [Command("fox")]
         public async Task Fox (CommandContext ctx)
