@@ -5,5 +5,5 @@ then
     wait
 fi
 cd Lavalink && java -jar ./Lavalink.jar &
-dotnet run &&
+cd $HOME/heroku_output && ./Kityme &&
 fg
