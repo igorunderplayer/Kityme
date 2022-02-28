@@ -52,14 +52,30 @@ namespace Kityme.Commands {
         }
 
         [Command("bordergradient")]
-        public async Task BorderGradient (CommandContext ctx, [RemainingText] DiscordMember member = null) {
-            member ??= ctx.Member;
-            var colors = new ColorStop[]
-            {
-                new ColorStop(0f, Color.FromRgb(215, 2, 112)),
-                new ColorStop(0.375f, Color.FromRgb(115, 79, 150)),
-                new ColorStop(0.85f, Color.FromRgb(0, 56, 168))
-            };
+        public async Task BorderGradient (CommandContext ctx, params DiscordColor[] rawColors) {
+            var member = ctx.Member;
+
+            if(rawColors.Length < 2) {
+                await ctx.RespondAsync("vc tem q colocar pelo menos 2 cores. ex: `43,45,0 12,76,255`");
+                return;
+            }
+
+            ColorStop[] colors = new ColorStop[rawColors.Length];
+            
+            for (int i = 0;i < rawColors.Length;i++) {
+                DiscordColor color = rawColors[i];
+                float point = ((1f / rawColors.Length) * (float)(i +.5f));
+                colors[i] = new ColorStop(point, Color.FromRgb(color.R, color.G, color.B));
+            }
+
+            // var colors = new ColorStop[]
+            // {
+            //     new ColorStop(0f, Color.FromRgb(215, 2, 112)),
+            //     new ColorStop(0.375f, Color.FromRgb(115, 79, 150)),
+            //     new ColorStop(0.85f, Color.FromRgb(0, 56, 168))
+            // };
+
+
 
             Stream avatarStream = null;
             using(var client = new HttpClient()) {
@@ -91,6 +107,11 @@ namespace Kityme.Commands {
                 await ctx.RespondAsync(messageBuilder);
 
             }
+        }
+
+        [Command("teste")]
+        public async Task Teste (CommandContext ctx, DiscordColor color) {
+            await ctx.RespondAsync($"color: val {color.Value} | r: {color.R} g: {color.G} b: {color.B}");
         }
     }
 
