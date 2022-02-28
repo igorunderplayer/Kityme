@@ -58,7 +58,7 @@ namespace Kityme.Commands {
             {
                 new ColorStop(0f, Color.FromRgb(215, 2, 112)),
                 new ColorStop(0.375f, Color.FromRgb(115, 79, 150)),
-                new ColorStop(0.825f, Color.FromRgb(0, 56, 168))
+                new ColorStop(0.85f, Color.FromRgb(0, 56, 168))
             };
 
             Stream avatarStream = null;
