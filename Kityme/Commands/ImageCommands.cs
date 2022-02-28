@@ -27,11 +27,11 @@ namespace Kityme.Commands {
                 avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
             }
 
-            using(var img = await Image<Rgb48>.LoadAsync(avatarStream)) {
+            using(var img = await Image<Rgba32>.LoadAsync(avatarStream)) {
                 img.Mutate(x => x.Resize(1024, 1024));
                 var withBorder = new Image<Rgba32>(img.Width, img.Height);
                 img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
-                withBorder.Mutate(x => 
+                withBorder.Mutate(x =>
                     x.BackgroundColor(color)
                     .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1)
                 );
@@ -49,6 +49,48 @@ namespace Kityme.Commands {
 
             }
 
+        }
+
+        [Command("bordergradient")]
+        public async Task BorderGradient (CommandContext ctx, [RemainingText] DiscordMember member = null) {
+            member ??= ctx.Member;
+            var colors = new ColorStop[]
+            {
+                new ColorStop(0f, Color.FromRgb(215, 2, 112)),
+                new ColorStop(0.375f, Color.FromRgb(115, 79, 150)),
+                new ColorStop(0.825f, Color.FromRgb(0, 56, 168))
+            };
+
+            Stream avatarStream = null;
+            using(var client = new HttpClient()) {
+                avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
+            }
+
+            using(var img = await Image<Rgba32>.LoadAsync(avatarStream)) {
+                img.Mutate(x => x.Resize(1024, 1024));
+                var withBorder = new Image<Rgba32>(img.Width, img.Height);
+                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
+                withBorder.Mutate(x => {
+                    var options = new DrawingOptions();
+                    var point1 = new PointF(512, 0);
+                    var point2 = new PointF(512, 1024);
+                    var a = new LinearGradientBrush(point1, point2, GradientRepetitionMode.None, colors);
+                    x.Fill(options, a)
+                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1);
+                });
+                
+
+                var ms = new MemoryStream();
+                withBorder.Save(ms, new PngEncoder());
+                ms.Position = 0;
+
+                DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
+                    .WithFile("kityme-border.png", ms)
+                    .WithContent("ta ai o avatar com bordinha");
+
+                await ctx.RespondAsync(messageBuilder);
+
+            }
         }
     }
 
