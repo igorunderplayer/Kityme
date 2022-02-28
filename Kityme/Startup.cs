@@ -90,6 +90,8 @@ namespace Kityme
       Commands.RegisterCommands<RPCommands>();
       Commands.RegisterCommands<MusicCommands>();
       Commands.RegisterCommands<EconomyCommands>();
+      Commands.RegisterCommands<ImageCommands>();
+
 
       SlashCommands = Client.UseSlashCommands();
 
