@@ -86,7 +86,7 @@ namespace Kityme.Commands {
 
                 DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
                     .WithFile("kityme-border.png", ms)
-                    .WithContent("ta ai o avatar com bordinha");
+                    .WithContent("ta ai o avatar com bordinha (COMANDO EM TESTES!!!)");
 
                 await ctx.RespondAsync(messageBuilder);
 
