@@ -16,6 +16,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.Text;
 using MongoDB.Bson.Serialization.Attributes;
+using SixLabors.ImageSharp.Formats.Gif;
 
 namespace Kityme.Commands {
     public class ImageCommands : BaseCommandModule
@@ -30,22 +31,25 @@ namespace Kityme.Commands {
                 avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
             }
 
-            using(var img = await Image<Rgba32>.LoadAsync(avatarStream)) {
-                img.Mutate(x => x.Resize(1024, 1024));
+            using(var ms = new MemoryStream())
+            using(var original = Image.Load(avatarStream, out var format))
+            using(var img = original.CloneAs<Rgba32>()) {
+                img.Mutate(x => x.Resize(1024, 1024).BackgroundColor(color));
                 var withBorder = new Image<Rgba32>(img.Width, img.Height);
                 img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
-                withBorder.Mutate(x =>
+                withBorder.Mutate(x => {
                     x.BackgroundColor(color)
-                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1)
-                );
+                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1);
+                });
                 
 
-                var ms = new MemoryStream();
-                withBorder.Save(ms, new PngEncoder());
+                await withBorder.SaveAsync(ms, format.Name.ToLower() == "gif" ? new GifEncoder() : new PngEncoder());
                 ms.Position = 0;
 
+                string filename = format.Name.ToLower() == "gif" ? "kityme-border.gif" : "kityme-border.png";
+
                 DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
-                    .WithFile("kityme-border.png", ms)
+                    .WithFile(filename, ms)
                     .WithContent("ta ai o avatar com bordinha");
 
                 await ctx.RespondAsync(messageBuilder);
@@ -75,8 +79,8 @@ namespace Kityme.Commands {
             using(var client = new HttpClient()) {
                 avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
             }
-
-            using(var img = await Image<Rgba32>.LoadAsync(avatarStream)) {
+            using(var original = Image.Load(avatarStream, out var format))
+            using(var img = original.CloneAs<Rgba32>()) {
                 img.Mutate(x => x.Resize(1024, 1024));
                 var withBorder = new Image<Rgba32>(img.Width, img.Height);
                 img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
@@ -201,6 +205,8 @@ namespace Kityme.Commands {
 
 
     public static class Avatar {
+
+        // https://github.com/SixLabors/Samples/blob/main/ImageSharp/AvatarWithRoundedCorner/Program.cs
         public static IImageProcessingContext ConvertToAvatar(this IImageProcessingContext processingContext, Size size, float cornerRadius)
         {
             return processingContext.Resize(new ResizeOptions
@@ -221,14 +227,14 @@ namespace Kityme.Commands {
             ctx.SetGraphicsOptions(new GraphicsOptions()
             {
                 Antialias = true,
-                AlphaCompositionMode = PixelAlphaCompositionMode.DestOut // enforces that any part of this shape that has color is punched out of the background
+                AlphaCompositionMode = PixelAlphaCompositionMode.DestOut
             });
             
             // mutating in here as we already have a cloned original
             // use any color (not Transparent), so the corners will be clipped
             foreach (var c in corners)
             {
-                ctx = ctx.Fill(Color.Coral, c);
+                ctx = ctx.Fill(Color.Red, c);
             }
             return ctx;
         }
