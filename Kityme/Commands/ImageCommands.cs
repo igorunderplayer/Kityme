@@ -20,6 +20,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Kityme.Commands {
     public class ImageCommands : BaseCommandModule
     {
+        [Command("border")]
         public async Task Border (CommandContext ctx, byte r = 0, byte g = 0, byte b = 0, [RemainingText] DiscordMember member = null) {
             member ??= ctx.Member;
             var color = Color.FromRgb(r, g, b);
