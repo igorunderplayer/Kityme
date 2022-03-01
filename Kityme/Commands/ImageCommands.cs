@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -13,11 +14,12 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Text;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Kityme.Commands {
     public class ImageCommands : BaseCommandModule
     {
-        [Command("border")]
         public async Task Border (CommandContext ctx, byte r = 0, byte g = 0, byte b = 0, [RemainingText] DiscordMember member = null) {
             member ??= ctx.Member;
             var color = Color.FromRgb(r, g, b);
@@ -68,15 +70,6 @@ namespace Kityme.Commands {
                 colors[i] = new ColorStop(point, Color.FromRgb(color.R, color.G, color.B));
             }
 
-            // var colors = new ColorStop[]
-            // {
-            //     new ColorStop(0f, Color.FromRgb(215, 2, 112)),
-            //     new ColorStop(0.375f, Color.FromRgb(115, 79, 150)),
-            //     new ColorStop(0.85f, Color.FromRgb(0, 56, 168))
-            // };
-
-
-
             Stream avatarStream = null;
             using(var client = new HttpClient()) {
                 avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
@@ -109,10 +102,100 @@ namespace Kityme.Commands {
             }
         }
 
+        [Command("bordergradient-preset")]
+        public async Task BorderBackgroundPreset (CommandContext ctx, string action, string name = null, params DiscordColor[] rawColors) {
+            var presets = await Managers.DBManager.GetAllPresets();
+            switch (action) {
+                case "create":
+                    if(string.IsNullOrWhiteSpace(name)) return;
+                    if(presets.Exists(f => f.name == name)) {
+                        await ctx.RespondAsync("ja existe um preset com esse nome ae!");
+                        return;
+                    } else {
+                        PresetColor[] colors = new PresetColor[rawColors.Length];
+            
+                        for (int i = 0;i < rawColors.Length;i++) {
+                            DiscordColor color = rawColors[i];
+                            float point = ((1f / rawColors.Length) * (float)(i +.5f));
+                            colors[i] = new PresetColor(color.R, color.G, color.B);
+                        }
+
+                        PresetBorderGradient newPreset = new PresetBorderGradient(colors, name);
+
+                        await Managers.DBManager.BorderGradientPresetCollection.InsertOneAsync(newPreset);
+
+                        await ctx.RespondAsync($"preset com nome {name} criado!");
+                    }
+                break;
+
+                case "load":
+                    if(string.IsNullOrWhiteSpace(name)) return;
+                    if(!presets.Exists(f => f.name == name)) return;
+                    PresetBorderGradient presetToLoad = presets.Find(x => x.name == name);
+
+                    StringBuilder stringBuilder = new();
+                    stringBuilder
+                        .Append("use o comando abaixo:")
+                        .AppendLine()
+                        .Append("`<prefix>bordergradient` ");
+
+                    foreach(var color in presetToLoad.colors) {
+                        stringBuilder.Append($"{color.r},{color.g},{color.b} ");
+                    }
+
+                    await ctx.RespondAsync(stringBuilder.ToString());
+                break;
+
+                default:
+                    return;
+            }
+        }
+
+        [Command("bordergradient-preset")]
+        public async Task BorderBackgroundPreset(CommandContext ctx, string action = "list") {
+            var presets = await Managers.DBManager.GetAllPresets();
+            if (action == "list") {
+                string msg = "use `<prefix> bordergradient-preset load [nome]` \n\n";
+                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                    .WithTitle("lista de presets para o comando bordergradient");
+
+                foreach(var dbPreset in presets) {
+                    msg += ($"`{dbPreset.name}` \n");
+                }
+
+                embedBuilder.WithDescription(msg);
+
+                await ctx.RespondAsync(embedBuilder);
+            }
+        }
+
         [Command("teste")]
         public async Task Teste (CommandContext ctx, DiscordColor color) {
             await ctx.RespondAsync($"color: val {color.Value} | r: {color.R} g: {color.G} b: {color.B}");
         }
+    }
+
+    [BsonIgnoreExtraElements]
+    public class PresetBorderGradient {
+        public string name;
+        public PresetColor[] colors;
+
+        public PresetBorderGradient (PresetColor[] colors, string name) {
+            this.name = name;
+            this.colors = colors;       
+        }
+    }
+
+    public class PresetColor {
+        public byte r = 0;
+        public byte g = 0;
+        public byte b = 0;
+        public PresetColor (byte r, byte g, byte b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
+        
     }
 
 
