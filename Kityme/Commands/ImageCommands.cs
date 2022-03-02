@@ -75,36 +75,24 @@ namespace Kityme.Commands {
                 colors[i] = new ColorStop(point, Color.FromRgb(color.R, color.G, color.B));
             }
 
-            Stream avatarStream = null;
-            using(var client = new HttpClient()) {
-                avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
-            }
-            using(var original = Image.Load(avatarStream, out var format))
-            using(var img = original.CloneAs<Rgba32>()) {
-                img.Mutate(x => x.Resize(1024, 1024));
-                var withBorder = new Image<Rgba32>(img.Width, img.Height);
-                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
-                withBorder.Mutate(x => {
-                    var options = new DrawingOptions();
-                    var point1 = new PointF(512, 0);
-                    var point2 = new PointF(512, 1024);
-                    var a = new LinearGradientBrush(point1, point2, GradientRepetitionMode.None, colors);
-                    x.Fill(options, a)
-                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1);
-                });
-                
+            HttpClient client = new HttpClient();
+            Stream avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
+            client.Dispose();
+            Image result = Avatar.GenerateBorderGradientAvatar(avatarStream, colors);
+            avatarStream.Close();
+            MemoryStream ms = new MemoryStream();
 
-                var ms = new MemoryStream();
-                withBorder.Save(ms, new PngEncoder());
-                ms.Position = 0;
+            await result.SaveAsync(ms, new PngEncoder());
+            ms.Position = 0;
 
-                DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
+            DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
                     .WithFile("kityme-border.png", ms)
                     .WithContent("ta ai o avatar com bordinha (COMANDO EM TESTES!!!)");
 
                 await ctx.RespondAsync(messageBuilder);
 
-            }
+            result.Dispose();
+            ms.Close();
         }
 
         [Command("bordergradient-preset")]
@@ -205,6 +193,24 @@ namespace Kityme.Commands {
 
 
     public static class Avatar {
+        public static Image GenerateBorderGradientAvatar(Stream avatar, ColorStop[] colors) {
+            using(var original = Image.Load(avatar, out var format))
+            using(var img = original.CloneAs<Rgba32>()) {
+                img.Mutate(x => x.Resize(1024, 1024));
+                var withBorder = new Image<Rgba32>(img.Width, img.Height);
+                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
+                withBorder.Mutate(x => {
+                    var options = new DrawingOptions();
+                    var point1 = new PointF(img.Width / 2, 0);
+                    var point2 = new PointF(img.Width / 2, img.Height);
+                    var a = new LinearGradientBrush(point1, point2, GradientRepetitionMode.None, colors);
+                    x.Fill(options, a)
+                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1);
+                });
+
+                return withBorder;
+            }
+        }
 
         // https://github.com/SixLabors/Samples/blob/main/ImageSharp/AvatarWithRoundedCorner/Program.cs
         public static IImageProcessingContext ConvertToAvatar(this IImageProcessingContext processingContext, Size size, float cornerRadius)
