@@ -13,7 +13,6 @@ namespace Kityme.Managers
         public static IMongoClient Client { get; private set; }
         public static IMongoDatabase Database { get; private set; }
         public static IMongoCollection<User> UserCollection { get; private set; }
-        public static IMongoCollection<PresetBorderGradient> BorderGradientPresetCollection { get; private set; }
 
         public static void Connect (string mongoURL)
         {
@@ -21,7 +20,6 @@ namespace Kityme.Managers
             Database = Client.GetDatabase("kityme");
 
             UserCollection = Database.UseCollection<User>();
-            BorderGradientPresetCollection = Database.UseCollection<PresetBorderGradient>();
         }
 
         public static async Task ReplaceUserAsync(User user)
@@ -30,6 +28,7 @@ namespace Kityme.Managers
         public static async Task<User> GetUserAsync(ulong id)
         {
             User user = await UserCollection.Find(x => x.ID == id).FirstOrDefaultAsync();
+
             if(user == null)
             {
                 await CreateUserAsync(new User(id));
@@ -42,9 +41,5 @@ namespace Kityme.Managers
 
         public static async Task CreateUserAsync(User user)
             => await UserCollection.InsertOneAsync(user);
-
-        public static async Task<List<PresetBorderGradient>> GetAllPresets()
-            => await (await BorderGradientPresetCollection.FindAsync(_ => true)).ToListAsync<PresetBorderGradient>();
-
     }
 }

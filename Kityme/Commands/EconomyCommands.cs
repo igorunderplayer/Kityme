@@ -6,22 +6,15 @@ using System;
 using System.Threading.Tasks;
 using Kityme.Extensions;
 using Kityme.Managers;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus;
-using System.Collections.Generic;
-using System.Text;
-using DSharpPlus.Interactivity.Enums;
 
 namespace Kityme.Commands
 {
     class EconomyCommands: BaseCommandModule
     {
-        [Command("saldo"), Aliases("atm", "balance", "bal")]
+        [Command("money"), Aliases("saldo", "atm", "balance", "bal")]
         public async Task Saldo(CommandContext ctx, [RemainingText] DiscordUser member = null)
         {
             await ctx.RespondAsync("em construção");
-            return;
             member ??= ctx.User;
             User u = await member.GetAsync();
             string mine = member.Id == ctx.User.Id ? "se" : member.Username;
@@ -32,7 +25,6 @@ namespace Kityme.Commands
         public async Task Profile (CommandContext ctx, [RemainingText] DiscordUser user = null)
         {
             await ctx.RespondAsync("em construção");
-            return;
             user ??= ctx.User;
             User dbUser = await user.GetAsync();
 
@@ -49,13 +41,12 @@ namespace Kityme.Commands
         public async Task Pay (CommandContext ctx, double qtd, [RemainingText] DiscordMember user)
         {
             await ctx.RespondAsync("em construção");
-            return;
+
             if (double.IsNaN(qtd) || double.IsInfinity(qtd))
             {
                 await ctx.RespondAsync("😳");
                 return;
             }
-
 
             User author = await ctx.User.GetAsync();
             User receiver = await user.GetAsync();
@@ -83,7 +74,6 @@ namespace Kityme.Commands
         public async Task Daily (CommandContext ctx)
         {
             await ctx.RespondAsync("em construção");
-            return;
             User user = await ctx.User.GetAsync();
             if ((DateTime.UtcNow - user.DailyTimestamp).TotalDays < 1)
             {
