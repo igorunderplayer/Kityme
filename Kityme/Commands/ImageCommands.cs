@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using System.Net.Http;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -18,30 +16,36 @@ using System.Text;
 using MongoDB.Bson.Serialization.Attributes;
 using SixLabors.ImageSharp.Formats.Gif;
 
-namespace Kityme.Commands {
+namespace Kityme.Commands
+{
     public class ImageCommands : BaseCommandModule
     {
         [Command("border")]
-        public async Task Border (CommandContext ctx, byte r = 0, byte g = 0, byte b = 0, [RemainingText] DiscordMember member = null) {
+        public async Task Border(CommandContext ctx, DiscordColor color, [RemainingText] DiscordMember member = null)
+        {
             member ??= ctx.Member;
-            var color = Color.FromRgb(r, g, b);
+            
 
             Stream avatarStream = null;
-            using(var client = new HttpClient()) {
+            using (HttpClient client = new HttpClient())
+            {
                 avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
             }
 
-            using(var ms = new MemoryStream())
-            using(var original = Image.Load(avatarStream, out var format))
-            using(var img = original.CloneAs<Rgba32>()) {
-                img.Mutate(x => x.Resize(1024, 1024).BackgroundColor(color));
-                var withBorder = new Image<Rgba32>(img.Width, img.Height);
-                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
-                withBorder.Mutate(x => {
-                    x.BackgroundColor(color)
-                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1);
+            using (MemoryStream ms = new MemoryStream())
+            using (Image original = Image.Load(avatarStream, out var format))
+            using (Image img = original.CloneAs<Rgba32>())
+            {
+                Color c = Color.FromRgb(color.R, color.G, color.B);
+                img.Mutate(x => x.Resize(1024, 1024).BackgroundColor(c));
+                Image withBorder = new Image<Rgba32>(img.Width, img.Height);
+                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 / 2));
+                withBorder.Mutate(x =>
+                {
+                    x.BackgroundColor(c)
+                    .DrawImage(img, new Point((withBorder.Width - img.Width) / 2, (withBorder.Height - img.Height) / 2), 1);
                 });
-                
+
 
                 await withBorder.SaveAsync(ms, format.Name.ToLower() == "gif" ? new GifEncoder() : new PngEncoder());
                 ms.Position = 0;
@@ -53,25 +57,26 @@ namespace Kityme.Commands {
                     .WithContent("ta ai o avatar com bordinha");
 
                 await ctx.RespondAsync(messageBuilder);
-
             }
-
         }
 
         [Command("bordergradient")]
-        public async Task BorderGradient (CommandContext ctx, params DiscordColor[] rawColors) {
-            var member = ctx.Member;
+        public async Task BorderGradient(CommandContext ctx, params DiscordColor[] rawColors)
+        {
+            DiscordMember member = ctx.Member;
 
-            if(rawColors.Length < 2) {
+            if (rawColors.Length < 2)
+            {
                 await ctx.RespondAsync("vc tem q colocar pelo menos 2 cores. ex: `43,45,0 12,76,255`");
                 return;
             }
 
             ColorStop[] colors = new ColorStop[rawColors.Length];
-            
-            for (int i = 0;i < rawColors.Length;i++) {
+
+            for (int i = 0; i < rawColors.Length; i++)
+            {
                 DiscordColor color = rawColors[i];
-                float point = ((1f / rawColors.Length) * (float)(i +.5f));
+                float point = ((1f / rawColors.Length) * (float)(i + .5f));
                 colors[i] = new ColorStop(point, Color.FromRgb(color.R, color.G, color.B));
             }
 
@@ -89,123 +94,59 @@ namespace Kityme.Commands {
                     .WithFile("kityme-border.png", ms)
                     .WithContent("ta ai o avatar com bordinha (COMANDO EM TESTES!!!)");
 
-                await ctx.RespondAsync(messageBuilder);
+            await ctx.RespondAsync(messageBuilder);
 
             result.Dispose();
             ms.Close();
         }
-
-        [Command("bordergradient-preset")]
-        public async Task BorderBackgroundPreset (CommandContext ctx, string action, string name = null, params DiscordColor[] rawColors) {
-            var presets = await Managers.DBManager.GetAllPresets();
-            switch (action) {
-                case "create":
-                    if(string.IsNullOrWhiteSpace(name)) return;
-                    if(presets.Exists(f => f.name == name)) {
-                        await ctx.RespondAsync("ja existe um preset com esse nome ae!");
-                        return;
-                    } else {
-                        PresetColor[] colors = new PresetColor[rawColors.Length];
-            
-                        for (int i = 0;i < rawColors.Length;i++) {
-                            DiscordColor color = rawColors[i];
-                            float point = ((1f / rawColors.Length) * (float)(i +.5f));
-                            colors[i] = new PresetColor(color.R, color.G, color.B);
-                        }
-
-                        PresetBorderGradient newPreset = new PresetBorderGradient(colors, name);
-
-                        await Managers.DBManager.BorderGradientPresetCollection.InsertOneAsync(newPreset);
-
-                        await ctx.RespondAsync($"preset com nome {name} criado!");
-                    }
-                break;
-
-                case "load":
-                    if(string.IsNullOrWhiteSpace(name)) return;
-                    if(!presets.Exists(f => f.name == name)) return;
-                    PresetBorderGradient presetToLoad = presets.Find(x => x.name == name);
-
-                    StringBuilder stringBuilder = new();
-                    stringBuilder
-                        .Append("use o comando abaixo:")
-                        .AppendLine()
-                        .Append("`<prefix>bordergradient` ");
-
-                    foreach(var color in presetToLoad.colors) {
-                        stringBuilder.Append($"{color.r},{color.g},{color.b} ");
-                    }
-
-                    await ctx.RespondAsync(stringBuilder.ToString());
-                break;
-
-                default:
-                    return;
-            }
-        }
-
-        [Command("bordergradient-preset")]
-        public async Task BorderBackgroundPreset(CommandContext ctx, string action = "list") {
-            var presets = await Managers.DBManager.GetAllPresets();
-            if (action == "list") {
-                string msg = "use `<prefix> bordergradient-preset load [nome]` \n\n";
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
-                    .WithTitle("lista de presets para o comando bordergradient");
-
-                foreach(var dbPreset in presets) {
-                    msg += ($"`{dbPreset.name}` \n");
-                }
-
-                embedBuilder.WithDescription(msg);
-
-                await ctx.RespondAsync(embedBuilder);
-            }
-        }
-
-        [Command("teste")]
-        public async Task Teste (CommandContext ctx, DiscordColor color) {
-            await ctx.RespondAsync($"color: val {color.Value} | r: {color.R} g: {color.G} b: {color.B}");
-        }
     }
 
     [BsonIgnoreExtraElements]
-    public class PresetBorderGradient {
+    public class PresetBorderGradient
+    {
         public string name;
         public PresetColor[] colors;
 
-        public PresetBorderGradient (PresetColor[] colors, string name) {
+        public PresetBorderGradient(PresetColor[] colors, string name)
+        {
             this.name = name;
-            this.colors = colors;       
+            this.colors = colors;
         }
     }
 
-    public class PresetColor {
+    public class PresetColor
+    {
         public byte r = 0;
         public byte g = 0;
         public byte b = 0;
-        public PresetColor (byte r, byte g, byte b) {
+        public PresetColor(byte r, byte g, byte b)
+        {
             this.r = r;
             this.g = g;
             this.b = b;
         }
-        
+
     }
 
 
-    public static class Avatar {
-        public static Image GenerateBorderGradientAvatar(Stream avatar, ColorStop[] colors) {
-            using(var original = Image.Load(avatar, out var format))
-            using(var img = original.CloneAs<Rgba32>()) {
+    public static class Avatar
+    {
+        public static Image GenerateBorderGradientAvatar(Stream avatar, ColorStop[] colors)
+        {
+            using (var original = Image.Load(avatar, out var format))
+            using (var img = original.CloneAs<Rgba32>())
+            {
                 img.Mutate(x => x.Resize(1024, 1024));
                 var withBorder = new Image<Rgba32>(img.Width, img.Height);
-                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 /2));
-                withBorder.Mutate(x => {
+                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 / 2));
+                withBorder.Mutate(x =>
+                {
                     var options = new DrawingOptions();
                     var point1 = new PointF(img.Width / 2, 0);
                     var point2 = new PointF(img.Width / 2, img.Height);
                     var a = new LinearGradientBrush(point1, point2, GradientRepetitionMode.None, colors);
                     x.Fill(options, a)
-                    .DrawImage(img, new Point((withBorder.Width - img.Width) /2, (withBorder.Height - img.Height) /2), 1);
+                    .DrawImage(img, new Point((withBorder.Width - img.Width) / 2, (withBorder.Height - img.Height) / 2), 1);
                 });
 
                 return withBorder;
@@ -235,7 +176,7 @@ namespace Kityme.Commands {
                 Antialias = true,
                 AlphaCompositionMode = PixelAlphaCompositionMode.DestOut
             });
-            
+
             // mutating in here as we already have a cloned original
             // use any color (not Transparent), so the corners will be clipped
             foreach (var c in corners)

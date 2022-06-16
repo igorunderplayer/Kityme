@@ -10,15 +10,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01079" />
-      <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01079" />
-      <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01079" />
-      <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01079" />
-      <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01079" />
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.2.0-1.final" />
-      <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
+      <PackageReference Include="DSharpPlus" Version="4.2.0" />
+      <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0" />
+      <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0" />
+      <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0" />
+      <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.3.0-1.final" />
+      <PackageReference Include="MongoDB.Driver" Version="2.16.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
       <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
     </ItemGroup>
 

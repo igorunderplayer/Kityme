@@ -12,10 +12,10 @@ using Newtonsoft.Json;
 
 namespace Kityme.Commands
 {
-    public class InfoCommands: BaseCommandModule
+    public class InfoCommands : BaseCommandModule
     {
         [Command("ping")]
-        public async Task Ping (CommandContext ctx)
+        public async Task Ping(CommandContext ctx)
         {
             var ping = ctx.Client.Ping;
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
@@ -26,23 +26,8 @@ namespace Kityme.Commands
             await ctx.RespondAsync(embed);
         }
 
-        [Command("matriz")]
-        public async Task Matriz (CommandContext ctx, int sizeX, int sizeY) {
-            string visual = "";
-            for(int i = 0; i < sizeX; i++) {
-                for(int j = 0; j < sizeY; j++) {
-                    visual += $"{i}, {j} ";
-                }
-
-                visual += "\n";
-            }
-
-            await ctx.RespondAsync(visual);
-        }
-
-
         [Command("fox")]
-        public async Task Fox (CommandContext ctx)
+        public async Task Fox(CommandContext ctx)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -64,7 +49,7 @@ namespace Kityme.Commands
         }
 
         [Command("invite"), Aliases("convite"), Description("manda link pra me add")]
-        public async Task Invite (CommandContext ctx)
+        public async Task Invite(CommandContext ctx)
         {
             string invite = $"https://discord.com/oauth2/authorize?client_id={ctx.Client.CurrentUser.Id}&scope=bot+applications.commands&permissions=75361473";
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
@@ -89,35 +74,35 @@ namespace Kityme.Commands
         }
 
         [Command("lavalink"), Description("mostra informações do lavalink '-")]
-        public async Task Lavalink (CommandContext ctx)
+        public async Task Lavalink(CommandContext ctx)
         {
             LavalinkExtension lavalink = ctx.Client.GetLavalink();
             LavalinkNodeConnection node = lavalink.GetIdealNodeConnection();
 
             long ramUsed = node.Statistics.RamUsed / 1024 / 1024;
-            var uptime = node.Statistics.Uptime;
+            TimeSpan uptime = node.Statistics.Uptime;
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
                 Title = "Lavalink",
-                Description = $"**RAM**: {ramUsed} \n **Uptime**: {uptime}"
+                Description = $"**RAM**: {ramUsed} \n" +
+                              $"**Uptime**: {uptime.ToString("h'h 'm'm 's's'")}"
             };
 
             await ctx.RespondAsync(embed);
-
         }
 
         [Command("botinfo"), Description("mostra minhas informações"), Aliases("bi", "stats"), CommandType("Info")]
-        public async Task Botinfo (CommandContext ctx)
+        public async Task Botinfo(CommandContext ctx)
         {
             Process p = Process.GetCurrentProcess();
             long ram = p.WorkingSet64 / 1024 / 1024;
             ulong id = 477534823011844120;
 
             DiscordUser owner = await ctx.Client.GetUserAsync(id);
-            var time = DateTime.UtcNow - p.StartTime.ToUniversalTime();
-            var threads = p.Threads.Count;
-            
+            TimeSpan uptime = DateTime.UtcNow - p.StartTime.ToUniversalTime();
+            var threads = "Alguns";
+
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder
             {
@@ -129,7 +114,7 @@ namespace Kityme.Commands
                               $"📁 | Total de comandinhos: {ctx.Client.GetCommandsNext().RegisteredCommands.Count} \n" +
                               "\n" +
                               $"📈 | RAM: {ram}MB \n" +
-                              $"Uptime(tavez): {time.ToString("h'h 'm'm 's's'")} \n" +
+                              $"Uptime(tavez): {uptime.ToString("h'h 'm'm 's's'")} \n" +
                               $"Threads(tavez tbm): {threads}"
 
             };
