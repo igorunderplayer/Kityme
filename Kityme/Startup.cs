@@ -41,7 +41,8 @@ namespace Kityme
                 Environment.GetEnvironmentVariable("LAVALINK_HOST"),
                 Environment.GetEnvironmentVariable("SLAVALINK_HOST"),
                 Environment.GetEnvironmentVariable("LAVALINK_PASSWORD"),
-                Environment.GetEnvironmentVariable("MONGO_URL")
+                Environment.GetEnvironmentVariable("MONGO_URL"),
+                Environment.GetEnvironmentVariable("PREFIX")
             );
 
             var config = new DiscordConfiguration
@@ -65,9 +66,12 @@ namespace Kityme
 
             CommandsNextConfiguration commandsConfig = new()
             {
-                StringPrefixes = new string[] { "ku!", "kityme" },
                 EnableMentionPrefix = true,
-                EnableDms = false
+                EnableDms = false,
+                StringPrefixes = new string[] {
+                    botConfig.Prefix,
+                    "kityme"
+                },
             };
 
             Commands = Client.UseCommandsNext(commandsConfig);

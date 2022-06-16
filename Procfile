@@ -1,1 +1,1 @@
-﻿worker: cd ./Kityme && ./start.sh
+﻿worker: cd ./Kityme && ./start.sh --heroku
