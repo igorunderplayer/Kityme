@@ -1,62 +1,89 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using System.Text;
-using MongoDB.Bson.Serialization.Attributes;
 using SixLabors.ImageSharp.Formats.Gif;
+
 
 namespace Kityme.Commands
 {
     public class ImageCommands : BaseCommandModule
     {
+        [Command("pixelate")]
+        public async Task PixelateCommand(CommandContext ctx, int pixelSize = -1, [RemainingText] DiscordMember member = null)
+        {
+            member ??= ctx.Member;
+
+            using (HttpClient client = new HttpClient())
+            using (Stream avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024)))
+            using (Image avatar = await Image.LoadAsync(avatarStream))
+            {
+                if (pixelSize <= 0) pixelSize = (avatar.Height + avatar.Width) / 128;
+                avatar.Mutate(x => x.Pixelate(pixelSize));
+                client.Dispose();
+                await avatarStream.DisposeAsync();
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await avatar.SaveAsync(ms, new PngEncoder());
+                    ms.Position = 0;
+
+                    DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
+                        .WithFile("pixelated.png", ms)
+                        .WithContent("PIXELS");
+
+                    await ctx.RespondAsync(messageBuilder);
+                }
+            }
+        }
+
         [Command("border")]
         public async Task Border(CommandContext ctx, DiscordColor color, [RemainingText] DiscordMember member = null)
         {
             member ??= ctx.Member;
-            
 
-            Stream avatarStream = null;
             using (HttpClient client = new HttpClient())
-            {
-                avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024));
-            }
-
-            using (MemoryStream ms = new MemoryStream())
+            using (Stream avatarStream = await client.GetStreamAsync(member.GetAvatarUrl(ImageFormat.Png, 1024)))
             using (Image original = Image.Load(avatarStream, out var format))
             using (Image img = original.CloneAs<Rgba32>())
             {
+                client.Dispose();
+                await avatarStream.DisposeAsync();
+
                 Color c = Color.FromRgb(color.R, color.G, color.B);
                 img.Mutate(x => x.Resize(1024, 1024).BackgroundColor(c));
-                Image withBorder = new Image<Rgba32>(img.Width, img.Height);
-                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 / 2));
-                withBorder.Mutate(x =>
+                using (Image withBorder = new Image<Rgba32>(img.Width, img.Height))
                 {
-                    x.BackgroundColor(c)
-                    .DrawImage(img, new Point((withBorder.Width - img.Width) / 2, (withBorder.Height - img.Height) / 2), 1);
-                });
+                    img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 / 2));
+                    withBorder.Mutate(x =>
+                    {
+                        x.BackgroundColor(c)
+                        .DrawImage(img, new Point((withBorder.Width - img.Width) / 2, (withBorder.Height - img.Height) / 2), 1);
+                    });
 
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        await withBorder.SaveAsync(ms, format.Name.ToLower() == "gif" ? new GifEncoder() : new PngEncoder());
+                        ms.Position = 0;
 
-                await withBorder.SaveAsync(ms, format.Name.ToLower() == "gif" ? new GifEncoder() : new PngEncoder());
-                ms.Position = 0;
+                        string filename = format.Name.ToLower() == "gif" ? "kityme-border.gif" : "kityme-border.png";
 
-                string filename = format.Name.ToLower() == "gif" ? "kityme-border.gif" : "kityme-border.png";
+                        DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
+                            .WithFile(filename, ms)
+                            .WithContent("ta ai o avatar com bordinha");
 
-                DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
-                    .WithFile(filename, ms)
-                    .WithContent("ta ai o avatar com bordinha");
-
-                await ctx.RespondAsync(messageBuilder);
+                        await ctx.RespondAsync(messageBuilder);
+                    }
+                }
             }
         }
 
@@ -101,33 +128,6 @@ namespace Kityme.Commands
         }
     }
 
-    [BsonIgnoreExtraElements]
-    public class PresetBorderGradient
-    {
-        public string name;
-        public PresetColor[] colors;
-
-        public PresetBorderGradient(PresetColor[] colors, string name)
-        {
-            this.name = name;
-            this.colors = colors;
-        }
-    }
-
-    public class PresetColor
-    {
-        public byte r = 0;
-        public byte g = 0;
-        public byte b = 0;
-        public PresetColor(byte r, byte g, byte b)
-        {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
-
-    }
-
 
     public static class Avatar
     {
@@ -137,19 +137,21 @@ namespace Kityme.Commands
             using (var img = original.CloneAs<Rgba32>())
             {
                 img.Mutate(x => x.Resize(1024, 1024));
-                var withBorder = new Image<Rgba32>(img.Width, img.Height);
-                img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 / 2));
-                withBorder.Mutate(x =>
+                using (var withBorder = new Image<Rgba32>(img.Width, img.Height))
                 {
-                    var options = new DrawingOptions();
-                    var point1 = new PointF(img.Width / 2, 0);
-                    var point2 = new PointF(img.Width / 2, img.Height);
-                    var a = new LinearGradientBrush(point1, point2, GradientRepetitionMode.None, colors);
-                    x.Fill(options, a)
-                    .DrawImage(img, new Point((withBorder.Width - img.Width) / 2, (withBorder.Height - img.Height) / 2), 1);
-                });
+                    img.Mutate(x => x.ConvertToAvatar(new Size(920), 920 / 2));
+                    withBorder.Mutate(x =>
+                    {
+                        var options = new DrawingOptions();
+                        var point1 = new PointF(img.Width / 2, 0);
+                        var point2 = new PointF(img.Width / 2, img.Height);
+                        var a = new LinearGradientBrush(point1, point2, GradientRepetitionMode.None, colors);
+                        x.Fill(options, a)
+                        .DrawImage(img, new Point((withBorder.Width - img.Width) / 2, (withBorder.Height - img.Height) / 2), 1);
+                    });
 
-                return withBorder;
+                    return withBorder;
+                }
             }
         }
 

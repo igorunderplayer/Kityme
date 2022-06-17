@@ -14,12 +14,12 @@ namespace Kityme.Events.Client
     public class Ready
     {
         private readonly DiscordClient _client;
-        public Ready (DiscordClient client)
+        public Ready(DiscordClient client)
         {
             this._client = client;
         }
 
-        public Task Client_Ready (DiscordClient client, ReadyEventArgs e)
+        public Task Client_Ready(DiscordClient client, ReadyEventArgs e)
         {
             DiscordActivity[] activities =
             {
@@ -112,13 +112,13 @@ namespace Kityme.Events.Client
             async void Timer_Elapsed(object sender, ElapsedEventArgs e)
             {
                 DiscordActivity[] activities =
-            {
-                new DiscordActivity { Name = "pessoas falarem merda", ActivityType = ActivityType.ListeningTo },
-                new DiscordActivity { Name = $"para {client.Guilds.Count} servidores", ActivityType = ActivityType.Streaming, StreamUrl = "https://twitch.tv/..." },
-                new DiscordActivity { Name = "sou fofo", ActivityType = ActivityType.ListeningTo },
-                new DiscordActivity { Name = "reuprytmin", ActivityType = ActivityType.Playing },
-                new DiscordActivity { Name = "vc me adicionar no seu servidor", ActivityType = ActivityType.Watching }
-            };
+                {
+                    new DiscordActivity { Name = "pessoas falarem merda", ActivityType = ActivityType.ListeningTo },
+                    new DiscordActivity { Name = $"para {client.Guilds.Count} servidores", ActivityType = ActivityType.Streaming, StreamUrl = "https://twitch.tv/..." },
+                    new DiscordActivity { Name = "sou fofo", ActivityType = ActivityType.ListeningTo },
+                    new DiscordActivity { Name = "reuprytmin", ActivityType = ActivityType.Playing },
+                    new DiscordActivity { Name = "vc me adicionar no seu servidor", ActivityType = ActivityType.Watching }
+                };
 
                 await client.UpdateStatusAsync(activities[new Random().Next(0, activities.Length)]);
             }
