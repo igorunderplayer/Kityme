@@ -94,7 +94,7 @@ namespace Kityme.Commands
         public async Task Gaytest(CommandContext ctx, [RemainingText] DiscordMember member = null)
         {
             member ??= ctx.Member;
-            string tu = member.Id == ctx.User.Id ? "tu" : ctx.Member.Username;
+            string tu = member.Id == ctx.User.Id ? "tu" : member.Username;
             int num = new Random().Next(0, 100);
             var embed = new DiscordEmbedBuilder
             {
