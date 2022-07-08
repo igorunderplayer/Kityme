@@ -91,13 +91,15 @@ namespace Kityme.Commands
         }
 
         [Command("gaytest"), Aliases("testegay", "testgay")]
-        public async Task Gaytest(CommandContext ctx)
+        public async Task Gaytest(CommandContext ctx, [RemainingText] DiscordMember member = null)
         {
+            member ??= ctx.Member;
+            string tu = member.Id == ctx.User.Id ? "tu" : ctx.Member.Username;
             int num = new Random().Next(0, 100);
             var embed = new DiscordEmbedBuilder
             {
-                Author = new DiscordEmbedBuilder.EmbedAuthor { Name = "Gaytest", IconUrl = ctx.User.AvatarUrl },
-                Description = $"Tu eh {num}% gay",
+                Author = new DiscordEmbedBuilder.EmbedAuthor { Name = "Gaytest", IconUrl = member.AvatarUrl },
+                Description = $"{tu} eh {num}% gay",
                 Color = DiscordColor.HotPink,
                 Footer = new DiscordEmbedBuilder.EmbedFooter { Text = "muito gay mano........." }
             };
