@@ -7,6 +7,10 @@ fi
 cd Lavalink && java -jar ./Lavalink.jar &
 
 if [ ! $1 ]; then
+    dotnet run && fg
+fi
+
+if [ $1 = "--render" ]; then
     ./Kityme && fg
 fi
 
