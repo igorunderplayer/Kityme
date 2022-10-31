@@ -8,10 +8,8 @@ FROM alpine:latest
 WORKDIR /src
 
 COPY --from=build /src/bin/Release/net6.0/linux-musl-x64/publish /src/build
+COPY --from=build /src/Lavalink /src/Lavalink
+COPY --from-build /src/start.sh /src/start.sh
 RUN apk upgrade --update-cache --available && apk add openssl libstdc++ icu-libs && rm -rf /var/cache/apk/*
-
-RUN ls
-
-RUN ls build
 
 CMD ./Kityme/start.sh
