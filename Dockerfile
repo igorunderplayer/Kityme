@@ -10,4 +10,6 @@ WORKDIR /src
 COPY --from=build /src/bin/Release/net6.0/linux-musl-x64/publish /src
 RUN apk upgrade --update-cache --available && apk add openssl libstdc++ icu-libs && rm -rf /var/cache/apk/*
 
-CMD ./start.sh --render
+RUN ls
+
+CMD ./Kityme/start.sh

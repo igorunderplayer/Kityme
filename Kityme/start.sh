@@ -11,7 +11,7 @@ if [ ! $1 ]; then
 fi
 
 if [ $1 = "--render" ]; then
-    ./Kityme && fg
+    ../Kityme && fg
 fi
 
 if [ $1 = "--heroku" ]; then
