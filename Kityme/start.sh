@@ -7,7 +7,7 @@ fi
 cd Lavalink && java -jar ./Lavalink.jar &
 
 if [ ! $1 ]; then
-    dotnet run && fg
+    ./Kityme && fg
 fi
 
 if [ $1 = "--heroku" ]; then
