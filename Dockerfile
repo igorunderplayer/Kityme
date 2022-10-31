@@ -7,9 +7,11 @@ RUN dotnet restore -r linux-musl-x64 && dotnet publish -c Release -r linux-musl-
 FROM alpine:latest
 WORKDIR /src
 
-COPY --from=build /src/bin/Release/net6.0/linux-musl-x64/publish /src
+COPY --from=build /src/bin/Release/net6.0/linux-musl-x64/publish /src/build
 RUN apk upgrade --update-cache --available && apk add openssl libstdc++ icu-libs && rm -rf /var/cache/apk/*
 
 RUN ls
+
+RUN ls build
 
 CMD ./Kityme/start.sh
