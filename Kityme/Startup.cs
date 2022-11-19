@@ -95,7 +95,7 @@ namespace Kityme
             var endpoint = new ConnectionEndpoint()
             {
                 Hostname = "127.0.0.1",
-                Port = Environment.GetEnvironmentVariable("PORT")
+                Port = Int32.Parse(Environment.GetEnvironmentVariable("PORT"))
             };
 
             var lavalinkConfig = new LavalinkConfiguration()
