@@ -12,24 +12,27 @@ namespace Kityme.Utils
                 return;
 
             foreach (var line in File.ReadAllLines(filePath))
-                        {
-                            var parts = line.Split(
-                                '=',
-                                StringSplitOptions.RemoveEmptyEntries);
+            {
+                var parts = line.Split(
+                    '=',
+                    StringSplitOptions.RemoveEmptyEntries
+                );
 
-                            string variable = parts[0];
-                            string value = parts[1];
-                            
-                            if (parts.Length < 2)
-                                continue;
+                string variable = parts[0];
+                string value = parts[1];
 
-                            if (parts.Length > 3)
-                            {
-                                value = line.Replace($"{variable}=", "");
-                            }
-            
-                            Environment.SetEnvironmentVariable(variable, value);
-                        } 
+                if (parts.Length < 2)
+                    continue;
+
+                if (parts.Length > 3)
+                {
+                    value = line.Replace($"{variable}=", "");
+                }
+
+                if (String.IsNullOrEmpty(value)) continue;
+
+                Environment.SetEnvironmentVariable(variable, value);
+            }
         }
     }
 }
