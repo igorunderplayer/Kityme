@@ -11,6 +11,6 @@ if [ ! $1 ]; then
 fi
 
 if [ $1 = "--docker" ]; then
-    cd /src/Lavalink && java -jar Lavalink.jar &
+    cd /src/Lavalink && ./start.sh
     /src/build/Kityme
 fi

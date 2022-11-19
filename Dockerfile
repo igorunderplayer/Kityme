@@ -4,7 +4,7 @@ WORKDIR /src
 COPY ./Kityme /src
 RUN dotnet restore -r linux-x64 && dotnet publish -c Release -r linux-x64 --no-restore --self-contained -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:DebugType=embedded
 
-FROM azul/zulu-openjdk:13
+FROM azul/zulu-openjdk:13-latest
 WORKDIR /src
 
 RUN apt update && apt upgrade -y

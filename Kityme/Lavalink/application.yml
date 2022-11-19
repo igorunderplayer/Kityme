@@ -1,32 +1,41 @@
 server: # REST and WS server
-  port: 5478
+  port: DYNAMICPORT
   address: 0.0.0.0
 
 lavalink:
   server:
-    password: "123"
+    password: "DYNAMICPASSWORD"
     playerUpdateInterval: 5 # How frequently to send player updates to clients, in seconds
-    statsTaskInterval: 30
+    statsTaskInterval: 30 # How frequently to send the node stats to clients, in seconds
     koe:
       useEpoll: true
       highPacketPriority: true
       bufferDurationMs: 400
       byteBufAllocator: "default"
     sources:
-      youtube: true
+      # Remote sources
       bandcamp: true
+      getyarn: true
+      http: true
+      odysee: true
+      reddit: true
       soundcloud: true
       twitch: true
       vimeo: true
-      http: true
+      yandex: true
+      youtube: true
+
+      # Local source
       local: false
     lavaplayer:
       nonAllocating: false # Whether to use the non-allocating frame buffer.
-      frameBufferDuration: 5000 # The frame buffer duration, in milliseconds
-      youtubePlaylistLoadLimit: 3 # Number of pages at 100 each
+      frameBufferDuration: 4000 # The frame buffer duration, in milliseconds
+      youtubePlaylistLoadLimit: 6 # Number of pages at 100 each
       gc-warnings: true
       youtubeSearchEnabled: true
+      odyseeSearchEnabled: true
       soundcloudSearchEnabled: true
+      yandexMusicSearchEnabled: true
       #ratelimit:
         #ipBlocks: ["1.0.0.0/8", "..."] # list of ip blocks
         #excludedIps: ["...", "..."] # ips which should be explicit excluded from usage by lavalink
@@ -57,3 +66,4 @@ logging:
   level:
     root: INFO
     lavalink: INFO
+
